@@ -53,6 +53,8 @@ public class PhotoActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_photo);
 
+		setTitle(getIntent().getStringExtra("KEY_ITEM"));
+
 		Log.e("O_O",  getFilesDir().getAbsolutePath());
 		Log.e("O_O",  getCacheDir().getAbsolutePath());
 		Log.e("O_O",  Environment.getExternalStorageDirectory().getAbsolutePath());
@@ -211,5 +213,11 @@ public class PhotoActivity extends AppCompatActivity {
 		}
 
 		return null;
+	}
+
+	public static Intent createIntent(Context context, String item) {
+		Intent intent = new Intent(context, PhotoActivity.class);
+		intent.putExtra("KEY_ITEM", item);
+		return intent;
 	}
 }
