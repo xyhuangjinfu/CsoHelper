@@ -15,13 +15,18 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static android.os.Environment.getExternalStoragePublicDirectory;
 
@@ -30,14 +35,28 @@ public class PhotoActivity extends AppCompatActivity {
 	static final int REQUEST_IMAGE_CAPTURE = 1;
 	static final int REQUEST_TAKE_PHOTO = 2;
 
-	ImageView imageView;
+//	ImageView imageView;
+
+	private RecyclerView recyclerView;
+	private RecyclerView.Adapter mAdapter;
+	private RecyclerView.LayoutManager layoutManager;
+	private List<Uri> mUriList = new ArrayList<>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_photo);
 
-		imageView = findViewById(R.id.iv);
+//		imageView = findViewById(R.id.iv);
+		recyclerView = findViewById(R.id.rv);
+
+		// use a linear layout manager
+		layoutManager = new GridLayoutManager(this, 3);
+		recyclerView.setLayoutManager(layoutManager);
+
+		// specify an adapter (see also next example)
+		mAdapter = new PhotoListAdapter(mUriList);
+		recyclerView.setAdapter(mAdapter);
 	}
 
 	@Override
@@ -71,16 +90,19 @@ public class PhotoActivity extends AppCompatActivity {
 		if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 			Bundle extras = data.getExtras();
 			Bitmap imageBitmap = (Bitmap) extras.get("data");
-			imageView.setImageBitmap(imageBitmap);
+//			imageView.setImageBitmap(imageBitmap);
 		} else 		if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
 //			Bundle extras = data.getExtras();
 //			Bitmap imageBitmap = (Bitmap) extras.get("data");
 //			imageView.setImageBitmap(imageBitmap);
 
 			if (mUri != null) {
-				Glide.with(this)
-						.load(mUri)
-						.into(imageView);
+//				Glide.with(this)
+//						.load(mUri)
+//						.into(imageView);
+
+				mUriList.add(mUri);
+				mAdapter.notifyDataSetChanged();
 			}
 		}
 	}
