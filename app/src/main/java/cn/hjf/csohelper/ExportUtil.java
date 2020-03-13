@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Environment;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,9 +15,10 @@ import cn.hjf.csohelper.data.model.Photo;
 
 public class ExportUtil {
 	public static boolean export(Context context, Map<Check, List<Photo>> checkPhotoMap) {
-		String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cso助手/";
+		String dir = context.getExternalFilesDir(null).getAbsolutePath() + "/cso助手/";
 		for (Map.Entry<Check, List<Photo>> e : checkPhotoMap.entrySet()) {
 			String dirPath = dir + e.getKey().mCso + "/" + e.getKey().mName + "/";
+
 			for (Photo p : e.getValue()) {
 				try {
 					File dirFile = new File(dirPath);
