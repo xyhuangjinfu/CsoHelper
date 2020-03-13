@@ -11,20 +11,20 @@ import java.util.List;
 
 import cn.hjf.csohelper.model.CheckItem;
 
-public class CsoItemListAdapter extends RecyclerView.Adapter<CsoItemListAdapter.MyViewHolder> {
+public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyViewHolder> {
 	private List<CheckItem> mDataset;
 
 	private Callback mCallback;
 
 	// Provide a suitable constructor (depends on the kind of dataset)
-	public CsoItemListAdapter(List<CheckItem> myDataset) {
+	public CheckListAdapter(List<CheckItem> myDataset) {
 		mDataset = myDataset;
 	}
 
 	// Create new views (invoked by the layout manager)
 	@Override
-	public CsoItemListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
-															  int viewType) {
+	public CheckListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
+															int viewType) {
 		// create a new view
 		View v = LayoutInflater.from(parent.getContext())
 				.inflate(R.layout.view_cso_item, parent, false);

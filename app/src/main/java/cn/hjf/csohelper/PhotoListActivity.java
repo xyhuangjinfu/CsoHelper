@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -14,18 +13,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -37,10 +31,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import static android.os.Environment.getExternalStorageDirectory;
-import static android.os.Environment.getExternalStoragePublicDirectory;
-
-public class PhotoActivity extends AppCompatActivity {
+public class PhotoListActivity extends AppCompatActivity {
 
 	static final int REQUEST_IMAGE_CAPTURE = 1;
 	static final int REQUEST_TAKE_PHOTO = 2;
@@ -85,7 +76,7 @@ public class PhotoActivity extends AppCompatActivity {
 			@Override
 			public void onDelete(final int position) {
 
-				new AlertDialog.Builder(PhotoActivity.this).setTitle("确定删除这张照片？")
+				new AlertDialog.Builder(PhotoListActivity.this).setTitle("确定删除这张照片？")
 				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -225,7 +216,7 @@ public class PhotoActivity extends AppCompatActivity {
 	}
 
 	public static Intent createIntent(Context context, String item) {
-		Intent intent = new Intent(context, PhotoActivity.class);
+		Intent intent = new Intent(context, PhotoListActivity.class);
 		intent.putExtra("KEY_ITEM", item);
 		return intent;
 	}

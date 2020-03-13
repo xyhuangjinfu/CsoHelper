@@ -34,10 +34,10 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-public class CsoDetailActivity extends AppCompatActivity {
+public class CheckListActivity extends AppCompatActivity {
 
 	private RecyclerView recyclerView;
-	private CsoItemListAdapter mAdapter;
+	private CheckListAdapter mAdapter;
 	private RecyclerView.LayoutManager layoutManager;
 	private List<CheckItem> mItemList = new ArrayList<>();
 	private AppDatabase mDatabase;
@@ -47,7 +47,7 @@ public class CsoDetailActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_cso_detail);
+		setContentView(R.layout.activity_cso_list);
 		mCsoCompany = (CsoCompany) getIntent().getSerializableExtra("KEY_CSO");
 		setTitle(mCsoCompany.nName);
 
@@ -95,11 +95,11 @@ public class CsoDetailActivity extends AppCompatActivity {
 		recyclerView.setLayoutManager(layoutManager);
 
 		// specify an adapter (see also next example)
-		mAdapter = new CsoItemListAdapter(mItemList);
-		mAdapter.setCallback(new CsoItemListAdapter.Callback() {
+		mAdapter = new CheckListAdapter(mItemList);
+		mAdapter.setCallback(new CheckListAdapter.Callback() {
 			@Override
 			public void onClick(int position) {
-				startActivity(PhotoActivity.createIntent(CsoDetailActivity.this, mItemList.get(position).mName));
+				startActivity(PhotoListActivity.createIntent(CheckListActivity.this, mItemList.get(position).mName));
 			}
 		});
 		recyclerView.setAdapter(mAdapter);
@@ -167,7 +167,7 @@ public class CsoDetailActivity extends AppCompatActivity {
 
 					@Override
 					public void onError(Throwable e) {
-						Toast.makeText(CsoDetailActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+						Toast.makeText(CheckListActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
 					}
 
 					@Override
@@ -187,7 +187,7 @@ public class CsoDetailActivity extends AppCompatActivity {
 	}
 
 	public static Intent createIntent(Context context, CsoCompany csoCompany) {
-		Intent intent = new Intent(context, CsoDetailActivity.class);
+		Intent intent = new Intent(context, CheckListActivity.class);
 		intent.putExtra("KEY_CSO", csoCompany);
 		return intent;
 	}

@@ -11,39 +11,33 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
-
-import cn.hjf.csohelper.model.CsoCompany;
+import java.util.Map;
 
 public class CsoListAdapter extends RecyclerView.Adapter<CsoListAdapter.MyViewHolder> {
-	private List<CsoCompany> mDataset;
 
+	private List<String> mList;
+	private Map<String, String> mMap;
 	private Callback mCallback;
-
 	private int mContextMenuPosition;
 
-	// Provide a suitable constructor (depends on the kind of dataset)
-	public CsoListAdapter(List<CsoCompany> myDataset) {
-		mDataset = myDataset;
+	public CsoListAdapter(List<String> list, Map<String, String> map) {
+		mList = list;
+		mMap = map;
 	}
 
-	// Create new views (invoked by the layout manager)
 	@Override
-	public CsoListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
-														  int viewType) {
-		// create a new view
+	public CsoListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 		View v = LayoutInflater.from(parent.getContext())
 				.inflate(R.layout.view_cso_item, parent, false);
 		MyViewHolder vh = new MyViewHolder(v);
 		return vh;
 	}
 
-	// Replace the contents of a view (invoked by the layout manager)
 	@Override
 	public void onBindViewHolder(final MyViewHolder holder, final int position) {
-		// - get element from your dataset at this position
-		// - replace the contents of the view with that element
-
-		holder.mTvItem.setText(mDataset.get(position).nName);
+		String cso = mList.get(position);
+		holder.mTvItem.setText(cso);
+		holder.mTvCount.setText(mMap.get(cso));
 
 		holder.itemView.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -54,7 +48,7 @@ public class CsoListAdapter extends RecyclerView.Adapter<CsoListAdapter.MyViewHo
 			}
 		});
 
-		final Activity activity = (Activity)holder.itemView.getContext();
+		final Activity activity = (Activity) holder.itemView.getContext();
 		activity.registerForContextMenu(holder.itemView);
 		holder.itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
 			@Override
@@ -69,14 +63,10 @@ public class CsoListAdapter extends RecyclerView.Adapter<CsoListAdapter.MyViewHo
 	// Return the size of your dataset (invoked by the layout manager)
 	@Override
 	public int getItemCount() {
-		return mDataset == null ? 0 : mDataset.size();
+		return mList == null ? 0 : mList.size();
 	}
 
-	// Provide a reference to the views for each data item
-	// Complex data items may need more than one view per item, and
-	// you provide access to all the views for a data item in a view holder
 	public static class MyViewHolder extends RecyclerView.ViewHolder {
-		// each data item is just a string in this case
 		public TextView mTvItem;
 		public TextView mTvCount;
 

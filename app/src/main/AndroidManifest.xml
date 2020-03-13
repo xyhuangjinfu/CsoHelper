@@ -22,8 +22,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".PhotoActivity" />
-        <activity android:name=".CsoDetailActivity" />
+        <activity android:name=".PhotoListActivity" />
+        <activity android:name=".CheckListActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

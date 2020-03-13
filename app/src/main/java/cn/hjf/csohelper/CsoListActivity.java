@@ -17,12 +17,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import cn.hjf.csohelper.data.AppDatabase;
+import cn.hjf.csohelper.data.AppDatabaseHolder;
 import cn.hjf.csohelper.model.CsoCompany;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -34,72 +35,31 @@ import io.reactivex.schedulers.Schedulers;
 
 public class CsoListActivity extends AppCompatActivity {
 
-	private RecyclerView recyclerView;
+	private RecyclerView mRecyclerView;
 	private CsoListAdapter mAdapter;
-	private RecyclerView.LayoutManager layoutManager;
-	private List<CsoCompany> mItemList = new ArrayList<>();
-
-	private AppDatabase mDatabase;
+	private RecyclerView.LayoutManager mLayoutManager;
+	private List<String> mCsoList = new ArrayList<>();
+	private Map<String, String> mCsoCountMap = new HashMap<>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_cso_detail);
+		setContentView(R.layout.activity_cso_list);
 
-		mDatabase = Room.databaseBuilder(getApplicationContext(),
-				AppDatabase.class, "db_cso").build();
-
-		recyclerView = findViewById(R.id.rv);
-
-		// use a linear layout manager
-		layoutManager = new LinearLayoutManager(this);
-		recyclerView.setLayoutManager(layoutManager);
+		mRecyclerView = findViewById(R.id.rv);
+		mLayoutManager = new LinearLayoutManager(this);
+		mRecyclerView.setLayoutManager(mLayoutManager);
 
 		// specify an adapter (see also next example)
 
-		Observable.just("")
-				.flatMap(new Function<Object, ObservableSource<List<CsoCompany>>>() {
-					@Override
-					public ObservableSource<List<CsoCompany>> apply(Object o) throws Exception {
-						return Observable.just(mDatabase.csoCompanyDao().getAll());
-					}
-				})
-				.subscribeOn(Schedulers.io())
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Observer<List<CsoCompany>>() {
-					@Override
-					public void onSubscribe(Disposable d) {
-
-					}
-
-					@Override
-					public void onNext(List<CsoCompany> csoCompanies) {
-						mItemList.addAll(csoCompanies);
-						mAdapter.notifyDataSetChanged();
-					}
-
-					@Override
-					public void onError(Throwable e) {
-
-					}
-
-					@Override
-					public void onComplete() {
-
-					}
-				});
-
-		mAdapter = new CsoListAdapter(mItemList);
+		mAdapter = new CsoListAdapter(mCsoList, mCsoCountMap);
 		mAdapter.setCallback(new CsoListAdapter.Callback() {
 			@Override
 			public void onClick(int position) {
-				startActivity(CsoDetailActivity.createIntent(CsoListActivity.this, mItemList.get(position)));
+				startActivity(CheckListActivity.createIntent(CsoListActivity.this, mItemList.get(position)));
 			}
 		});
-		recyclerView.setAdapter(mAdapter);
-//		recyclerView.createContextMenu();
-//		recyclerView.setLongClickable(true);
-//		registerForContextMenu(recyclerView);
+		mRecyclerView.setAdapter(mAdapter);
 
 	}
 
@@ -188,5 +148,57 @@ public class CsoListActivity extends AppCompatActivity {
 					getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
 		}
+	}
+
+	/**
+	 * ***************************************************************************************************************
+	 * //
+	 * ***************************************************************************************************************
+	 */
+
+	private void fetchCsoList() {
+		Observable.just("")
+				.flatMap(new Function<Object, ObservableSource<Object[]>>() {
+					@Override
+					public ObservableSource<Object[]> apply(Object o) throws Exception {
+						List<String> csoList = AppDatabaseHolder.getDb(CsoListActivity.this).csoDao().getCsoList();
+
+						Map<String, String> map = new HashMap<>();
+						for (String cso : csoList) {
+							String count = AppDatabaseHolder.getDb(CsoListActivity.this).csoDao().getCheckListCount(cso);
+							map.put(cso, count);
+						}
+
+						Object[] objs = new Object[2];
+						objs[0] = csoList;
+						objs[1] = map;
+						return Observable.just(objs);
+					}
+				})
+				.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Observer<Object[]>() {
+					@Override
+					public void onSubscribe(Disposable d) {
+
+					}
+
+					@Override
+					public void onNext(Object[] objs) {
+						mCsoList.addAll((List<String>) objs[0]);
+						mCsoCountMap.putAll((Map<String, String>) objs[1]);
+						mAdapter.notifyDataSetChanged();
+					}
+
+					@Override
+					public void onError(Throwable e) {
+						Toast.makeText(CsoListActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+					}
+
+					@Override
+					public void onComplete() {
+
+					}
+				});
 	}
 }
