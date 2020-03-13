@@ -1,6 +1,7 @@
 package cn.hjf.csohelper;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -72,6 +74,21 @@ public class PhotoActivity extends AppCompatActivity {
 			@Override
 			public void onClick(int position) {
 				viewImage(mUriList.get(position));
+			}
+
+			@Override
+			public void onDelete(final int position) {
+
+				new AlertDialog.Builder(PhotoActivity.this).setTitle("确定删除这张照片？")
+				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						getContentResolver().delete(mUriList.get(position), null, null);
+						mUriList.remove(position);
+						mAdapter.notifyDataSetChanged();
+					}
+				}).setNegativeButton("取消", null).create().show();
+
 			}
 		});
 		recyclerView.setAdapter(mAdapter);

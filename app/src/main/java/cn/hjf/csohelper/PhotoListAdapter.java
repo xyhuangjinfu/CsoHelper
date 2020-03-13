@@ -29,11 +29,9 @@ public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.MyVi
 	public PhotoListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
 															int viewType) {
 		// create a new view
-		ImageView v = (ImageView) LayoutInflater.from(parent.getContext())
+		View v = LayoutInflater.from(parent.getContext())
 				.inflate(R.layout.view_photo, parent, false);
 		MyViewHolder vh = new MyViewHolder(v);
-
-
 		return vh;
 	}
 
@@ -54,6 +52,15 @@ public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.MyVi
 				}
 			}
 		});
+
+		holder.mIvDelete.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (mCallback != null) {
+					mCallback.onDelete(position);
+				}
+			}
+		});
 	}
 
 	// Return the size of your dataset (invoked by the layout manager)
@@ -69,16 +76,19 @@ public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.MyVi
 	public static class MyViewHolder extends RecyclerView.ViewHolder {
 		// each data item is just a string in this case
 		public ImageView mImageView;
+		public ImageView mIvDelete;
 
-		public MyViewHolder(ImageView v) {
-			super(v);
-			mImageView = v;
+		public MyViewHolder(View root) {
+			super(root);
+			mImageView = root.findViewById(R.id.iv);
+			mIvDelete = root.findViewById(R.id.iv_delete);
 		}
 	}
 
 
 	public interface Callback {
 		void onClick(int position);
+		void onDelete(int position);
 	}
 
 	public void setCallback(Callback callback) {
