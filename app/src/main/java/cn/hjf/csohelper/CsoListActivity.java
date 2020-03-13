@@ -215,7 +215,9 @@ public class CsoListActivity extends BaseActivity {
 					@Override
 					public void onNext(Object[] objs) {
 						cancelLoadDialog();
+						mCsoList.clear();
 						mCsoList.addAll((List<Cso>) objs[0]);
+						mCsoCountMap.clear();
 						mCsoCountMap.putAll((Map<String, Integer>) objs[1]);
 						mAdapter.notifyDataSetChanged();
 					}

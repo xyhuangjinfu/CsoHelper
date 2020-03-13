@@ -30,7 +30,7 @@ public class CsoListAdapter extends RecyclerView.Adapter<CsoListAdapter.MyViewHo
 	@Override
 	public CsoListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 		View v = LayoutInflater.from(parent.getContext())
-				.inflate(R.layout.view_cso_item, parent, false);
+				.inflate(R.layout.view_cso_check_item, parent, false);
 		MyViewHolder vh = new MyViewHolder(v);
 		return vh;
 	}
@@ -57,7 +57,7 @@ public class CsoListAdapter extends RecyclerView.Adapter<CsoListAdapter.MyViewHo
 			public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 				mContextMenuPosition = position;
 				MenuInflater inflater = activity.getMenuInflater();
-				inflater.inflate(R.menu.menu_list, menu);
+				inflater.inflate(R.menu.menu_list_context, menu);
 			}
 		});
 	}

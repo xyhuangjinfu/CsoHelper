@@ -4,28 +4,25 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import cn.hjf.csohelper.data.AppDatabase;
+import cn.hjf.csohelper.data.AppDatabaseHolder;
 import cn.hjf.csohelper.data.model.Check;
-import cn.hjf.csohelper.data.model.Cso;
+import cn.hjf.csohelper.data.model.Photo;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
@@ -34,121 +31,113 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-public class CheckListActivity extends AppCompatActivity {
+public class CheckListActivity extends BaseActivity {
 
-	private RecyclerView recyclerView;
+	private RecyclerView mRecyclerView;
 	private CheckListAdapter mAdapter;
-	private RecyclerView.LayoutManager layoutManager;
-	private List<Check> mItemList = new ArrayList<>();
-	private AppDatabase mDatabase;
+	private RecyclerView.LayoutManager mLayoutManager;
+	private List<Check> mCheckList = new ArrayList<>();
+	private Map<String, Integer> mPhotoCountMap = new HashMap<>();
 
-	private Cso mCsoCompany;
+	private String mCso;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_cso_list);
-		mCsoCompany = (Cso) getIntent().getSerializableExtra("KEY_CSO");
-		setTitle(mCsoCompany.nName);
+		setContentView(R.layout.activity_check_list);
 
-		mDatabase = Room.databaseBuilder(getApplicationContext(),
-				AppDatabase.class, "db_cso").build();
+		mCso = getIntent().getStringExtra("KEY_CSO");
+		setTitle(mCso);
 
-
-
-		Observable.just("")
-				.flatMap(new Function<String, ObservableSource<List<Check>>>() {
-					@Override
-					public ObservableSource<List<Check>> apply(String s) throws Exception {
-						return Observable.just(mDatabase.checkItemDao().getAll());
-					}
-				})
-				.subscribeOn(Schedulers.io())
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Observer<List<Check>>() {
-					@Override
-					public void onSubscribe(Disposable d) {
-
-					}
-
-					@Override
-					public void onNext(List<Check> checkItems) {
-						mItemList.addAll(checkItems);
-						mAdapter.notifyDataSetChanged();
-					}
-
-					@Override
-					public void onError(Throwable e) {
-
-					}
-
-					@Override
-					public void onComplete() {
-
-					}
-				});
-
-		recyclerView = findViewById(R.id.rv);
-
-		// use a linear layout manager
-		layoutManager = new LinearLayoutManager(this);
-		recyclerView.setLayoutManager(layoutManager);
-
-		// specify an adapter (see also next example)
-		mAdapter = new CheckListAdapter(mItemList);
+		mRecyclerView = findViewById(R.id.rv);
+		mLayoutManager = new LinearLayoutManager(this);
+		mRecyclerView.setLayoutManager(mLayoutManager);
+		mAdapter = new CheckListAdapter(mCheckList, mPhotoCountMap);
 		mAdapter.setCallback(new CheckListAdapter.Callback() {
 			@Override
 			public void onClick(int position) {
-				startActivity(PhotoListActivity.createIntent(CheckListActivity.this, mItemList.get(position).mName));
+				startActivity(PhotoListActivity.createIntent(CheckListActivity.this, mCheckList.get(position).mName));
 			}
 		});
-		recyclerView.setAdapter(mAdapter);
+		mRecyclerView.setAdapter(mAdapter);
+
+		fetchCheckList();
+	}
+
+	@Override
+	public boolean onContextItemSelected(@NonNull MenuItem item) {
+		deleteCheck(mCheckList.get(mAdapter.getContextMenuPosition()));
+		return true;
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu_cso_detail, menu);
+		inflater.inflate(R.menu.menu_check_list, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 		if (item.getItemId() == R.id.menu_add_item) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			LayoutInflater inflater = getLayoutInflater();
-
-			// Inflate and set the layout for the dialog
-			// Pass null as the parent view because its going in the dialog layout
-			final EditText editText = (EditText) inflater.inflate(R.layout.view_input, null);
-			builder.setTitle("输入项目名称");
-			builder.setView(editText)
-					// Add action buttons
-					.setPositiveButton("添加", new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int id) {
-							Check checkItem = new Check();
-							checkItem.mCsoName = mCsoCompany.nName;
-							checkItem.mName = editText.getText().toString();
-
-							save(checkItem);
-						}
-					})
-					.setNegativeButton("取消", null);
-			builder.create().show();
-			showSoftKeyboard(editText);
+			showCreateDialog();
 		} else if (item.getItemId() == R.id.menu_export) {
 			Toast.makeText(this, "导出", Toast.LENGTH_SHORT).show();
 		}
 		return true;
 	}
 
-	private void save(final Check checkItem) {
+	/**
+	 * ***************************************************************************************************************
+	 * //
+	 * ***************************************************************************************************************
+	 */
+
+	public static Intent createIntent(Context context, String cso) {
+		Intent intent = new Intent(context, CheckListActivity.class);
+		intent.putExtra("KEY_CSO", cso);
+		return intent;
+	}
+
+	/**
+	 * ***************************************************************************************************************
+	 * <p>
+	 * ***************************************************************************************************************
+	 */
+
+	private void showCreateDialog() {
+		final EditText editText = (EditText) getLayoutInflater().inflate(R.layout.view_input, null);
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(this)
+				.setTitle("输入审核项目名称")
+				.setView(editText)
+				.setPositiveButton("添加", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						Check checkItem = new Check();
+						checkItem.mCso = mCso;
+						checkItem.mName = editText.getText().toString();
+
+						saveCheck(checkItem);
+					}
+				})
+				.setNegativeButton("取消", null);
+		builder.create().show();
+	}
+
+	/**
+	 * ***************************************************************************************************************
+	 * <p>
+	 * ***************************************************************************************************************
+	 */
+
+	private void saveCheck(final Check check) {
+		showLoadDialog();
 		Observable.just("")
 				.flatMap(new Function<Object, ObservableSource<String>>() {
 					@Override
 					public ObservableSource<String> apply(Object o) throws Exception {
-						mDatabase.checkItemDao().insert(checkItem);
+						AppDatabaseHolder.getDb(CheckListActivity.this).checkDao().insert(check);
 						return Observable.just("");
 					}
 				})
@@ -167,28 +156,105 @@ public class CheckListActivity extends AppCompatActivity {
 
 					@Override
 					public void onError(Throwable e) {
+						cancelLoadDialog();
 						Toast.makeText(CheckListActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
 					}
 
 					@Override
 					public void onComplete() {
-						mItemList.add(checkItem);
-						mAdapter.notifyDataSetChanged();
+						cancelLoadDialog();
+						fetchCheckList();
 					}
 				});
 	}
 
-	public void showSoftKeyboard(View view) {
-		if (view.requestFocus()) {
-			InputMethodManager imm = (InputMethodManager)
-					getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
-		}
+	private void deleteCheck(final Check check) {
+		showLoadDialog();
+		Observable.just("")
+				.flatMap(new Function<Object, ObservableSource<String>>() {
+					@Override
+					public ObservableSource<String> apply(Object o) throws Exception {
+						AppDatabaseHolder.getDb(CheckListActivity.this).checkDao().delete(check);
+						return Observable.just("");
+					}
+				})
+				.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Observer<Object>() {
+					@Override
+					public void onSubscribe(Disposable d) {
+
+					}
+
+					@Override
+					public void onNext(Object o) {
+
+					}
+
+					@Override
+					public void onError(Throwable e) {
+						cancelLoadDialog();
+						Toast.makeText(CheckListActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+					}
+
+					@Override
+					public void onComplete() {
+						cancelLoadDialog();
+						fetchCheckList();
+					}
+				});
 	}
 
-	public static Intent createIntent(Context context, String cso) {
-		Intent intent = new Intent(context, CheckListActivity.class);
-		intent.putExtra("KEY_CSO", cso);
-		return intent;
+	private void fetchCheckList() {
+		showLoadDialog();
+		Observable.just("")
+				.flatMap(new Function<String, ObservableSource<Object[]>>() {
+					@Override
+					public ObservableSource<Object[]> apply(String s) throws Exception {
+						List<Check> checkList = AppDatabaseHolder.getDb(CheckListActivity.this).checkDao().getAll(mCso);
+
+						Map<String, Integer> map = new HashMap<>();
+						for (Check c : checkList) {
+							List<Photo> photos = AppDatabaseHolder.getDb(CheckListActivity.this).photoDao().getAll(mCso, c.mName);
+							map.put(c.mName, photos.size());
+						}
+
+						Object[] objs = new Object[2];
+						objs[0] = checkList;
+						objs[1] = map;
+						return Observable.just(objs);
+					}
+				})
+				.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Observer<Object[]>() {
+					@Override
+					public void onSubscribe(Disposable d) {
+
+					}
+
+					@Override
+					public void onNext(Object[] objs) {
+						cancelLoadDialog();
+						mCheckList.clear();
+						mCheckList.addAll((List<Check>) objs[0]);
+
+						mPhotoCountMap.clear();
+						mPhotoCountMap.putAll((Map<String, Integer>) objs[1]);
+
+						mAdapter.notifyDataSetChanged();
+					}
+
+					@Override
+					public void onError(Throwable e) {
+						cancelLoadDialog();
+						Toast.makeText(CheckListActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+					}
+
+					@Override
+					public void onComplete() {
+
+					}
+				});
 	}
 }

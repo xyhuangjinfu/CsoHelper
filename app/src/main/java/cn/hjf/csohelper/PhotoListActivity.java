@@ -118,7 +118,7 @@ public class PhotoListActivity extends AppCompatActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu_photo, menu);
+		inflater.inflate(R.menu.menu_photo_list, menu);
 		return true;
 	}
 

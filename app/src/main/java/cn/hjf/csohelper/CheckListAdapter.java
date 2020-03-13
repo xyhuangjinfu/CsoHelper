@@ -1,6 +1,9 @@
 package cn.hjf.csohelper;
 
+import android.app.Activity;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -8,37 +11,36 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.Map;
 
 import cn.hjf.csohelper.data.model.Check;
 
 public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyViewHolder> {
-	private List<Check> mDataset;
 
+	private List<Check> mCheckList;
+	private Map<String, Integer> mMap;
 	private Callback mCallback;
+	private int mContextMenuPosition;
 
-	// Provide a suitable constructor (depends on the kind of dataset)
-	public CheckListAdapter(List<Check> myDataset) {
-		mDataset = myDataset;
+	public CheckListAdapter(List<Check> checkList, Map<String, Integer> map) {
+		mCheckList = checkList;
+		mMap = map;
 	}
 
-	// Create new views (invoked by the layout manager)
 	@Override
 	public CheckListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
 															int viewType) {
-		// create a new view
 		View v = LayoutInflater.from(parent.getContext())
-				.inflate(R.layout.view_cso_item, parent, false);
+				.inflate(R.layout.view_cso_check_item, parent, false);
 		MyViewHolder vh = new MyViewHolder(v);
 		return vh;
 	}
 
-	// Replace the contents of a view (invoked by the layout manager)
 	@Override
 	public void onBindViewHolder(MyViewHolder holder, final int position) {
-		// - get element from your dataset at this position
-		// - replace the contents of the view with that element
-
-		holder.mTvItem.setText(mDataset.get(position).mName);
+		Check check = mCheckList.get(position);
+		holder.mTvItem.setText(check.mName);
+		holder.mTvCount.setText(String.valueOf(mMap.get(check.mName)));
 
 		holder.itemView.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -48,19 +50,25 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
 				}
 			}
 		});
+
+		final Activity activity = (Activity) holder.itemView.getContext();
+		activity.registerForContextMenu(holder.itemView);
+		holder.itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+			@Override
+			public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+				mContextMenuPosition = position;
+				MenuInflater inflater = activity.getMenuInflater();
+				inflater.inflate(R.menu.menu_list_context, menu);
+			}
+		});
 	}
 
-	// Return the size of your dataset (invoked by the layout manager)
 	@Override
 	public int getItemCount() {
-		return mDataset == null ? 0 : mDataset.size();
+		return mCheckList == null ? 0 : mCheckList.size();
 	}
 
-	// Provide a reference to the views for each data item
-	// Complex data items may need more than one view per item, and
-	// you provide access to all the views for a data item in a view holder
 	public static class MyViewHolder extends RecyclerView.ViewHolder {
-		// each data item is just a string in this case
 		public TextView mTvItem;
 		public TextView mTvCount;
 
@@ -77,5 +85,9 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
 
 	public void setCallback(Callback callback) {
 		mCallback = callback;
+	}
+
+	public int getContextMenuPosition() {
+		return mContextMenuPosition;
 	}
 }
