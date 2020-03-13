@@ -62,7 +62,6 @@ public class CsoListAdapter extends RecyclerView.Adapter<CsoListAdapter.MyViewHo
 		});
 	}
 
-	// Return the size of your dataset (invoked by the layout manager)
 	@Override
 	public int getItemCount() {
 		return mList == null ? 0 : mList.size();

@@ -54,6 +54,15 @@ public class CsoListActivity extends BaseActivity {
 			}
 		});
 		mRecyclerView.setAdapter(mAdapter);
+
+		fetchCsoList();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		fetchCsoList();
 	}
 
 	@Override

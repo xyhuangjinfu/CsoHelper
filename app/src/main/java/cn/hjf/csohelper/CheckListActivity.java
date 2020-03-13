@@ -56,10 +56,17 @@ public class CheckListActivity extends BaseActivity {
 		mAdapter.setCallback(new CheckListAdapter.Callback() {
 			@Override
 			public void onClick(int position) {
-				startActivity(PhotoListActivity.createIntent(CheckListActivity.this, mCheckList.get(position).mName));
+				startActivity(PhotoListActivity.createIntent(CheckListActivity.this, mCso, mCheckList.get(position).mName));
 			}
 		});
 		mRecyclerView.setAdapter(mAdapter);
+
+		fetchCheckList();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
 
 		fetchCheckList();
 	}
