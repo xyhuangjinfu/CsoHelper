@@ -93,7 +93,7 @@ public class CsoListActivity extends AppCompatActivity {
 		mAdapter.setCallback(new CsoListAdapter.Callback() {
 			@Override
 			public void onClick(int position) {
-				startActivity(CsoDetailActivity.createIntent(CsoListActivity.this, mItemList.get(position).name));
+				startActivity(CsoDetailActivity.createIntent(CsoListActivity.this, mItemList.get(position)));
 			}
 		});
 		recyclerView.setAdapter(mAdapter);
@@ -105,7 +105,7 @@ public class CsoListActivity extends AppCompatActivity {
 
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
-		Toast.makeText(this, mItemList.get(mAdapter.getContextMenuPosition()).name, Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, mItemList.get(mAdapter.getContextMenuPosition()).nName, Toast.LENGTH_SHORT).show();
 
 		return true;
 	}
@@ -133,7 +133,7 @@ public class CsoListActivity extends AppCompatActivity {
 						@Override
 						public void onClick(DialogInterface dialog, int id) {
 							CsoCompany company = new CsoCompany();
-							company.name = editText.getText().toString();
+							company.nName = editText.getText().toString();
 
 							saveCso(company);
 						}

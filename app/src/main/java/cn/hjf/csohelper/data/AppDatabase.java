@@ -8,4 +8,5 @@ import cn.hjf.csohelper.model.CsoCompany;
 @Database(entities = {CsoCompany.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
 	public abstract CsoCompanyDao csoCompanyDao();
+	public abstract CheckItemDao checkItemDao();
 }

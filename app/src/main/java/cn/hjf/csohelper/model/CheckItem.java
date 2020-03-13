@@ -7,17 +7,19 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
-@Entity(tableName = "cso_company")
-public class CsoCompany implements Serializable {
+@Entity(tableName = "check_item")
+public class CheckItem  implements Serializable {
 
 	@PrimaryKey
 	@NonNull
 	@ColumnInfo(name = "name")
-	public String nName;
+	public String mName;
+
+	@ColumnInfo(name = "cso_name")
+	public String mCsoName;
 
 	@Ignore
-	public List<CheckItem> mCheckItemList = new ArrayList<>(0);
+	public List<PhotoItem> mUriList;
 }

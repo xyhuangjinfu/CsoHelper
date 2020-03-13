@@ -9,13 +9,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import cn.hjf.csohelper.model.CheckItem;
+
 public class CsoItemListAdapter extends RecyclerView.Adapter<CsoItemListAdapter.MyViewHolder> {
-	private List<String> mDataset;
+	private List<CheckItem> mDataset;
 
 	private Callback mCallback;
 
 	// Provide a suitable constructor (depends on the kind of dataset)
-	public CsoItemListAdapter(List<String> myDataset) {
+	public CsoItemListAdapter(List<CheckItem> myDataset) {
 		mDataset = myDataset;
 	}
 
@@ -36,7 +38,7 @@ public class CsoItemListAdapter extends RecyclerView.Adapter<CsoItemListAdapter.
 		// - get element from your dataset at this position
 		// - replace the contents of the view with that element
 
-		holder.mTvItem.setText(mDataset.get(position));
+		holder.mTvItem.setText(mDataset.get(position).mName);
 
 		holder.itemView.setOnClickListener(new View.OnClickListener() {
 			@Override

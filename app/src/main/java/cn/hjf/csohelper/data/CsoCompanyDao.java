@@ -11,7 +11,7 @@ import cn.hjf.csohelper.model.CsoCompany;
 
 @Dao
 public interface CsoCompanyDao {
-	@Query("SELECT * FROM csocompany")
+	@Query("SELECT * FROM cso_company")
 	List<CsoCompany> getAll();
 
 	@Insert

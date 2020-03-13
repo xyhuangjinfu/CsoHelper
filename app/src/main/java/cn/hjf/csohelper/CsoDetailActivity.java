@@ -18,22 +18,75 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.hjf.csohelper.data.AppDatabase;
+import cn.hjf.csohelper.model.CheckItem;
+import cn.hjf.csohelper.model.CsoCompany;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 public class CsoDetailActivity extends AppCompatActivity {
 
 	private RecyclerView recyclerView;
 	private CsoItemListAdapter mAdapter;
 	private RecyclerView.LayoutManager layoutManager;
-	private List<String> mItemList = new ArrayList<>();
+	private List<CheckItem> mItemList = new ArrayList<>();
+	private AppDatabase mDatabase;
+
+	private CsoCompany mCsoCompany;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_cso_detail);
-		setTitle(getIntent().getStringExtra("KEY_CSO"));
+		mCsoCompany = (CsoCompany) getIntent().getSerializableExtra("KEY_CSO");
+		setTitle(mCsoCompany.nName);
+
+		mDatabase = Room.databaseBuilder(getApplicationContext(),
+				AppDatabase.class, "db_cso").build();
+
+
+
+		Observable.just("")
+				.flatMap(new Function<String, ObservableSource<List<CheckItem>>>() {
+					@Override
+					public ObservableSource<List<CheckItem>> apply(String s) throws Exception {
+						return Observable.just(mDatabase.checkItemDao().getAll());
+					}
+				})
+				.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Observer<List<CheckItem>>() {
+					@Override
+					public void onSubscribe(Disposable d) {
+
+					}
+
+					@Override
+					public void onNext(List<CheckItem> checkItems) {
+						mItemList.addAll(checkItems);
+						mAdapter.notifyDataSetChanged();
+					}
+
+					@Override
+					public void onError(Throwable e) {
+
+					}
+
+					@Override
+					public void onComplete() {
+
+					}
+				});
 
 		recyclerView = findViewById(R.id.rv);
 
@@ -46,7 +99,7 @@ public class CsoDetailActivity extends AppCompatActivity {
 		mAdapter.setCallback(new CsoItemListAdapter.Callback() {
 			@Override
 			public void onClick(int position) {
-				startActivity(PhotoActivity.createIntent(CsoDetailActivity.this, mItemList.get(position)));
+				startActivity(PhotoActivity.createIntent(CsoDetailActivity.this, mItemList.get(position).mName));
 			}
 		});
 		recyclerView.setAdapter(mAdapter);
@@ -74,8 +127,11 @@ public class CsoDetailActivity extends AppCompatActivity {
 					.setPositiveButton("添加", new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int id) {
-							mItemList.add(editText.getText().toString());
-							mAdapter.notifyDataSetChanged();
+							CheckItem checkItem = new CheckItem();
+							checkItem.mCsoName = mCsoCompany.nName;
+							checkItem.mName = editText.getText().toString();
+
+							save(checkItem);
 						}
 					})
 					.setNegativeButton("取消", null);
@@ -87,6 +143,41 @@ public class CsoDetailActivity extends AppCompatActivity {
 		return true;
 	}
 
+	private void save(final CheckItem checkItem) {
+		Observable.just("")
+				.flatMap(new Function<Object, ObservableSource<String>>() {
+					@Override
+					public ObservableSource<String> apply(Object o) throws Exception {
+						mDatabase.checkItemDao().insert(checkItem);
+						return Observable.just("");
+					}
+				})
+				.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Observer<Object>() {
+					@Override
+					public void onSubscribe(Disposable d) {
+
+					}
+
+					@Override
+					public void onNext(Object o) {
+
+					}
+
+					@Override
+					public void onError(Throwable e) {
+						Toast.makeText(CsoDetailActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+					}
+
+					@Override
+					public void onComplete() {
+						mItemList.add(checkItem);
+						mAdapter.notifyDataSetChanged();
+					}
+				});
+	}
+
 	public void showSoftKeyboard(View view) {
 		if (view.requestFocus()) {
 			InputMethodManager imm = (InputMethodManager)
@@ -95,9 +186,9 @@ public class CsoDetailActivity extends AppCompatActivity {
 		}
 	}
 
-	public static Intent createIntent(Context context, String item) {
+	public static Intent createIntent(Context context, CsoCompany csoCompany) {
 		Intent intent = new Intent(context, CsoDetailActivity.class);
-		intent.putExtra("KEY_CSO", item);
+		intent.putExtra("KEY_CSO", csoCompany);
 		return intent;
 	}
 }

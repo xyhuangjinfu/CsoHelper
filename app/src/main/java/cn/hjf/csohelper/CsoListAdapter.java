@@ -43,7 +43,7 @@ public class CsoListAdapter extends RecyclerView.Adapter<CsoListAdapter.MyViewHo
 		// - get element from your dataset at this position
 		// - replace the contents of the view with that element
 
-		holder.mTvItem.setText(mDataset.get(position).name);
+		holder.mTvItem.setText(mDataset.get(position).nName);
 
 		holder.itemView.setOnClickListener(new View.OnClickListener() {
 			@Override
