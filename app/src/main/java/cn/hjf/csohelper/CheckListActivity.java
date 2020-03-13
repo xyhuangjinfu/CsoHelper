@@ -1,5 +1,6 @@
 package cn.hjf.csohelper;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -38,6 +40,7 @@ public class CheckListActivity extends BaseActivity {
 	private RecyclerView.LayoutManager mLayoutManager;
 	private List<Check> mCheckList = new ArrayList<>();
 	private Map<String, Integer> mPhotoCountMap = new HashMap<>();
+	private Map<Check, List<Photo>> mCheckPhotoMap = new HashMap<>();
 
 	private String mCso;
 
@@ -89,7 +92,7 @@ public class CheckListActivity extends BaseActivity {
 		if (item.getItemId() == R.id.menu_add_item) {
 			showCreateDialog();
 		} else if (item.getItemId() == R.id.menu_export) {
-			Toast.makeText(this, "导出", Toast.LENGTH_SHORT).show();
+			export();
 		}
 		return true;
 	}
@@ -221,14 +224,17 @@ public class CheckListActivity extends BaseActivity {
 						List<Check> checkList = AppDatabaseHolder.getDb(CheckListActivity.this).checkDao().getAll(mCso);
 
 						Map<String, Integer> map = new HashMap<>();
+						Map<Check, List<Photo>> checkPhotoMap = new HashMap<>();
 						for (Check c : checkList) {
 							List<Photo> photos = AppDatabaseHolder.getDb(CheckListActivity.this).photoDao().getAll(mCso, c.mName);
 							map.put(c.mName, photos.size());
+							checkPhotoMap.put(c, photos);
 						}
 
-						Object[] objs = new Object[2];
+						Object[] objs = new Object[3];
 						objs[0] = checkList;
 						objs[1] = map;
+						objs[2] = checkPhotoMap;
 						return Observable.just(objs);
 					}
 				})
@@ -249,6 +255,9 @@ public class CheckListActivity extends BaseActivity {
 						mPhotoCountMap.clear();
 						mPhotoCountMap.putAll((Map<String, Integer>) objs[1]);
 
+						mCheckPhotoMap.clear();
+						mCheckPhotoMap.putAll((Map<Check, List<Photo>>) objs[2]);
+
 						mAdapter.notifyDataSetChanged();
 					}
 
@@ -261,6 +270,45 @@ public class CheckListActivity extends BaseActivity {
 					@Override
 					public void onComplete() {
 
+					}
+				});
+	}
+
+	private void export() {
+		ActivityCompat.requestPermissions(this,
+				new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+
+		showLoadDialog();
+		Observable.just("")
+				.flatMap(new Function<Object, ObservableSource<Boolean>>() {
+					@Override
+					public ObservableSource<Boolean> apply(Object o) throws Exception {
+						boolean b = ExportUtil.export(CheckListActivity.this, mCheckPhotoMap);
+						return Observable.just(b);
+					}
+				})
+				.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Observer<Boolean>() {
+					@Override
+					public void onSubscribe(Disposable d) {
+
+					}
+
+					@Override
+					public void onNext(Boolean b) {
+						cancelLoadDialog();
+						Toast.makeText(CheckListActivity.this, b ? "导出成功" : "导出失败", Toast.LENGTH_SHORT).show();
+					}
+
+					@Override
+					public void onError(Throwable e) {
+						cancelLoadDialog();
+						Toast.makeText(CheckListActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+					}
+
+					@Override
+					public void onComplete() {
 					}
 				});
 	}
