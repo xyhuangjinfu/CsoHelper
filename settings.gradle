@@ -1,0 +1,2 @@
+rootProject.name='CsoHelper'
+include ':app'
