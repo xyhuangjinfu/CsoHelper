@@ -1,9 +1,9 @@
 package cn.hjf.csohelper;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -92,9 +92,22 @@ public class CheckListActivity extends BaseActivity {
 		if (item.getItemId() == R.id.menu_add_item) {
 			showCreateDialog();
 		} else if (item.getItemId() == R.id.menu_export) {
-			export();
+
+			if (checkyStoragePermissions()) {
+				export();
+			}
 		}
 		return true;
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		if (requestCode == 111) {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				export();
+			}
+		}
 	}
 
 	/**
@@ -133,6 +146,22 @@ public class CheckListActivity extends BaseActivity {
 				})
 				.setNegativeButton("取消", null);
 		builder.create().show();
+	}
+
+	private boolean checkyStoragePermissions() {
+		try {
+			int permission = ActivityCompat.checkSelfPermission(this,
+					"android.permission.WRITE_EXTERNAL_STORAGE");
+			if (permission != PackageManager.PERMISSION_GRANTED) {
+				String[] PERMISSIONS_STORAGE = {"android.permission.WRITE_EXTERNAL_STORAGE"};
+				ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, 111);
+				return false;
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	/**
@@ -275,9 +304,6 @@ public class CheckListActivity extends BaseActivity {
 	}
 
 	private void export() {
-		ActivityCompat.requestPermissions(this,
-				new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-
 		showLoadDialog();
 		Observable.just("")
 				.flatMap(new Function<Object, ObservableSource<Boolean>>() {
