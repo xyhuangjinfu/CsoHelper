@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,11 +28,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import static android.os.Environment.getExternalStorageDirectory;
 import static android.os.Environment.getExternalStoragePublicDirectory;
@@ -162,7 +166,12 @@ public class PhotoActivity extends AppCompatActivity {
 //						.load(mUri)
 //						.into(imageView);
 
-				mUriList.add(mUri);
+
+
+				String url = copyIntoGallery(mUri);
+				getContentResolver().delete(mUri, null, null);
+
+				mUriList.add(Uri.parse(url));
 				mAdapter.notifyDataSetChanged();
 			}
 		}
@@ -219,5 +228,23 @@ public class PhotoActivity extends AppCompatActivity {
 		Intent intent = new Intent(context, PhotoActivity.class);
 		intent.putExtra("KEY_ITEM", item);
 		return intent;
+	}
+
+	private String copyIntoGallery(Uri uri) {
+		try {
+			InputStream is = getContentResolver().openInputStream(uri);
+			Bitmap bitmap = BitmapFactory.decodeStream(is);
+			String url = MediaStore.Images.Media.insertImage(
+					getContentResolver(),
+					bitmap,
+					"sb_" + UUID.randomUUID().toString() + "_" + System.currentTimeMillis(),
+					"");
+
+			return url;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 }
