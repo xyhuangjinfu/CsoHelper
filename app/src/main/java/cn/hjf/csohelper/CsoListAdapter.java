@@ -12,15 +12,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import cn.hjf.csohelper.model.CsoCompany;
+
 public class CsoListAdapter extends RecyclerView.Adapter<CsoListAdapter.MyViewHolder> {
-	private List<String> mDataset;
+	private List<CsoCompany> mDataset;
 
 	private Callback mCallback;
 
 	private int mContextMenuPosition;
 
 	// Provide a suitable constructor (depends on the kind of dataset)
-	public CsoListAdapter(List<String> myDataset) {
+	public CsoListAdapter(List<CsoCompany> myDataset) {
 		mDataset = myDataset;
 	}
 
@@ -41,7 +43,7 @@ public class CsoListAdapter extends RecyclerView.Adapter<CsoListAdapter.MyViewHo
 		// - get element from your dataset at this position
 		// - replace the contents of the view with that element
 
-		holder.mTvItem.setText(mDataset.get(position));
+		holder.mTvItem.setText(mDataset.get(position).name);
 
 		holder.itemView.setOnClickListener(new View.OnClickListener() {
 			@Override
