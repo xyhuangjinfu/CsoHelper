@@ -38,7 +38,7 @@ public class PhotoActivity extends AppCompatActivity {
 //	ImageView imageView;
 
 	private RecyclerView recyclerView;
-	private RecyclerView.Adapter mAdapter;
+	private PhotoListAdapter mAdapter;
 	private RecyclerView.LayoutManager layoutManager;
 	private List<Uri> mUriList = new ArrayList<>();
 
@@ -56,7 +56,28 @@ public class PhotoActivity extends AppCompatActivity {
 
 		// specify an adapter (see also next example)
 		mAdapter = new PhotoListAdapter(mUriList);
+		mAdapter.setCallback(new PhotoListAdapter.Callback() {
+			@Override
+			public void onClick(int position) {
+				viewImage(mUriList.get(position));
+			}
+		});
 		recyclerView.setAdapter(mAdapter);
+	}
+
+	private void viewImage(Uri uri) {
+//		Intent intent = new Intent(Intent.ACTION_VIEW);
+		Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+//		intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+		intent.setType("image/*");
+//		intent.setDataAndType(uri, "image/jpeg");
+		if (intent.resolveActivity(getPackageManager()) != null) {
+			startActivity(intent);
+		}
+
+//		if (intent.resolveActivity(getPackageManager()) != null) {
+//			startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+//		}
 	}
 
 	@Override
@@ -111,13 +132,15 @@ public class PhotoActivity extends AppCompatActivity {
 		// Create an image file name
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 		String imageFileName = "JPEG_" + timeStamp + "_";
+//		File storageDir = getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 		File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-//		File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 		File image = File.createTempFile(
 				imageFileName,  /* prefix */
 				".jpg",         /* suffix */
 				storageDir      /* directory */
 		);
+
+//		File image = new File(storageDir, imageFileName + ".jpg");
 
 		// Save a file: path for use with ACTION_VIEW intents
 //		currentPhotoPath = image.getAbsolutePath();
@@ -140,7 +163,7 @@ public class PhotoActivity extends AppCompatActivity {
 			// Continue only if the File was successfully created
 			if (photoFile != null) {
 				Uri photoURI = FileProvider.getUriForFile(this,
-						"cn.hjf.android.fileprovider",
+						"cn.hjf.csohelper.fileprovider",
 						photoFile);
 				takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
 				startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);

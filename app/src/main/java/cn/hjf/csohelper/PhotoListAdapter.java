@@ -2,6 +2,7 @@ package cn.hjf.csohelper;
 
 import android.net.Uri;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -13,6 +14,8 @@ import java.util.List;
 
 public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.MyViewHolder> {
 	private List<Uri> mDataset;
+
+	private Callback mCallback;
 
 
 
@@ -29,17 +32,28 @@ public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.MyVi
 		ImageView v = (ImageView) LayoutInflater.from(parent.getContext())
 				.inflate(R.layout.view_photo, parent, false);
 		MyViewHolder vh = new MyViewHolder(v);
+
+
 		return vh;
 	}
 
 	// Replace the contents of a view (invoked by the layout manager)
 	@Override
-	public void onBindViewHolder(MyViewHolder holder, int position) {
+	public void onBindViewHolder(MyViewHolder holder, final int position) {
 		// - get element from your dataset at this position
 		// - replace the contents of the view with that element
 		Glide.with(holder.mImageView)
 				.load(mDataset.get(position))
 				.into(holder.mImageView);
+
+		holder.mImageView.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (mCallback != null) {
+					mCallback.onClick(position);
+				}
+			}
+		});
 	}
 
 	// Return the size of your dataset (invoked by the layout manager)
@@ -60,5 +74,14 @@ public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.MyVi
 			super(v);
 			mImageView = v;
 		}
+	}
+
+
+	public interface Callback {
+		void onClick(int position);
+	}
+
+	public void setCallback(Callback callback) {
+		mCallback = callback;
 	}
 }
