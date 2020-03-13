@@ -12,39 +12,33 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
-public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.MyViewHolder> {
-	private List<Uri> mDataset;
+import cn.hjf.csohelper.data.model.Photo;
 
+public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.MyViewHolder> {
+
+	private List<Photo> mPhotoList;
 	private Callback mCallback;
 
-
-
-	// Provide a suitable constructor (depends on the kind of dataset)
-	public PhotoListAdapter(List<Uri> myDataset) {
-		mDataset = myDataset;
+	public PhotoListAdapter(List<Photo> list) {
+		mPhotoList = list;
 	}
 
-	// Create new views (invoked by the layout manager)
 	@Override
 	public PhotoListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
 															int viewType) {
-		// create a new view
 		View v = LayoutInflater.from(parent.getContext())
 				.inflate(R.layout.view_photo, parent, false);
 		MyViewHolder vh = new MyViewHolder(v);
 		return vh;
 	}
 
-	// Replace the contents of a view (invoked by the layout manager)
 	@Override
 	public void onBindViewHolder(MyViewHolder holder, final int position) {
-		// - get element from your dataset at this position
-		// - replace the contents of the view with that element
-		Glide.with(holder.mImageView)
-				.load(mDataset.get(position))
-				.into(holder.mImageView);
+		Glide.with(holder.mIvPhoto)
+				.load(Uri.parse(mPhotoList.get(position).mUri))
+				.into(holder.mIvPhoto);
 
-		holder.mImageView.setOnClickListener(new View.OnClickListener() {
+		holder.mIvPhoto.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (mCallback != null) {
@@ -63,31 +57,25 @@ public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.MyVi
 		});
 	}
 
-	// Return the size of your dataset (invoked by the layout manager)
 	@Override
 	public int getItemCount() {
-		return mDataset == null ? 0 : mDataset.size();
+		return mPhotoList == null ? 0 : mPhotoList.size();
 	}
 
-
-	// Provide a reference to the views for each data item
-	// Complex data items may need more than one view per item, and
-	// you provide access to all the views for a data item in a view holder
 	public static class MyViewHolder extends RecyclerView.ViewHolder {
-		// each data item is just a string in this case
-		public ImageView mImageView;
+		public ImageView mIvPhoto;
 		public ImageView mIvDelete;
 
 		public MyViewHolder(View root) {
 			super(root);
-			mImageView = root.findViewById(R.id.iv);
+			mIvPhoto = root.findViewById(R.id.iv_photo);
 			mIvDelete = root.findViewById(R.id.iv_delete);
 		}
 	}
 
-
 	public interface Callback {
 		void onClick(int position);
+
 		void onDelete(int position);
 	}
 
