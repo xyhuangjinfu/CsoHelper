@@ -9,15 +9,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import cn.hjf.csohelper.model.CheckItem;
+import cn.hjf.csohelper.data.model.Check;
 
 public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyViewHolder> {
-	private List<CheckItem> mDataset;
+	private List<Check> mDataset;
 
 	private Callback mCallback;
 
 	// Provide a suitable constructor (depends on the kind of dataset)
-	public CheckListAdapter(List<CheckItem> myDataset) {
+	public CheckListAdapter(List<Check> myDataset) {
 		mDataset = myDataset;
 	}
 

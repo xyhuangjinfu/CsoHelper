@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.hjf.csohelper.data.AppDatabase;
-import cn.hjf.csohelper.model.CheckItem;
-import cn.hjf.csohelper.model.CsoCompany;
+import cn.hjf.csohelper.data.model.Check;
+import cn.hjf.csohelper.data.model.Cso;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
@@ -39,16 +39,16 @@ public class CheckListActivity extends AppCompatActivity {
 	private RecyclerView recyclerView;
 	private CheckListAdapter mAdapter;
 	private RecyclerView.LayoutManager layoutManager;
-	private List<CheckItem> mItemList = new ArrayList<>();
+	private List<Check> mItemList = new ArrayList<>();
 	private AppDatabase mDatabase;
 
-	private CsoCompany mCsoCompany;
+	private Cso mCsoCompany;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_cso_list);
-		mCsoCompany = (CsoCompany) getIntent().getSerializableExtra("KEY_CSO");
+		mCsoCompany = (Cso) getIntent().getSerializableExtra("KEY_CSO");
 		setTitle(mCsoCompany.nName);
 
 		mDatabase = Room.databaseBuilder(getApplicationContext(),
@@ -57,22 +57,22 @@ public class CheckListActivity extends AppCompatActivity {
 
 
 		Observable.just("")
-				.flatMap(new Function<String, ObservableSource<List<CheckItem>>>() {
+				.flatMap(new Function<String, ObservableSource<List<Check>>>() {
 					@Override
-					public ObservableSource<List<CheckItem>> apply(String s) throws Exception {
+					public ObservableSource<List<Check>> apply(String s) throws Exception {
 						return Observable.just(mDatabase.checkItemDao().getAll());
 					}
 				})
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Observer<List<CheckItem>>() {
+				.subscribe(new Observer<List<Check>>() {
 					@Override
 					public void onSubscribe(Disposable d) {
 
 					}
 
 					@Override
-					public void onNext(List<CheckItem> checkItems) {
+					public void onNext(List<Check> checkItems) {
 						mItemList.addAll(checkItems);
 						mAdapter.notifyDataSetChanged();
 					}
@@ -127,7 +127,7 @@ public class CheckListActivity extends AppCompatActivity {
 					.setPositiveButton("添加", new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int id) {
-							CheckItem checkItem = new CheckItem();
+							Check checkItem = new Check();
 							checkItem.mCsoName = mCsoCompany.nName;
 							checkItem.mName = editText.getText().toString();
 
@@ -143,7 +143,7 @@ public class CheckListActivity extends AppCompatActivity {
 		return true;
 	}
 
-	private void save(final CheckItem checkItem) {
+	private void save(final Check checkItem) {
 		Observable.just("")
 				.flatMap(new Function<Object, ObservableSource<String>>() {
 					@Override
@@ -186,9 +186,9 @@ public class CheckListActivity extends AppCompatActivity {
 		}
 	}
 
-	public static Intent createIntent(Context context, CsoCompany csoCompany) {
+	public static Intent createIntent(Context context, String cso) {
 		Intent intent = new Intent(context, CheckListActivity.class);
-		intent.putExtra("KEY_CSO", csoCompany);
+		intent.putExtra("KEY_CSO", cso);
 		return intent;
 	}
 }

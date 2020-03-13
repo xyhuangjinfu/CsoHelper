@@ -13,14 +13,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import java.util.Map;
 
+import cn.hjf.csohelper.data.model.Cso;
+
 public class CsoListAdapter extends RecyclerView.Adapter<CsoListAdapter.MyViewHolder> {
 
-	private List<String> mList;
-	private Map<String, String> mMap;
+	private List<Cso> mList;
+	private Map<String, Integer> mMap;
 	private Callback mCallback;
 	private int mContextMenuPosition;
 
-	public CsoListAdapter(List<String> list, Map<String, String> map) {
+	public CsoListAdapter(List<Cso> list, Map<String, Integer> map) {
 		mList = list;
 		mMap = map;
 	}
@@ -35,9 +37,9 @@ public class CsoListAdapter extends RecyclerView.Adapter<CsoListAdapter.MyViewHo
 
 	@Override
 	public void onBindViewHolder(final MyViewHolder holder, final int position) {
-		String cso = mList.get(position);
-		holder.mTvItem.setText(cso);
-		holder.mTvCount.setText(mMap.get(cso));
+		Cso cso = mList.get(position);
+		holder.mTvItem.setText(cso.nName);
+		holder.mTvCount.setText(String.valueOf(mMap.get(cso.nName)));
 
 		holder.itemView.setOnClickListener(new View.OnClickListener() {
 			@Override

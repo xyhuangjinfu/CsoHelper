@@ -1,4 +1,4 @@
-package cn.hjf.csohelper.model;
+package cn.hjf.csohelper.data.model;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
@@ -7,17 +7,17 @@ import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 
-@Entity(tableName = "photo_item")
-public class PhotoItem implements Serializable {
+@Entity(tableName = "t_photo")
+public class Photo implements Serializable {
 
 	@PrimaryKey
 	@NonNull
-	@ColumnInfo(name = "uri")
+	@ColumnInfo(name = "c_uri")
 	public String mUri;
 
-	@ColumnInfo(name = "cso")
+	@ColumnInfo(name = "c_cso")
 	public String mCso;
 
-	@ColumnInfo(name = "check")
+	@ColumnInfo(name = "c_check")
 	public String mCheck;
 }
