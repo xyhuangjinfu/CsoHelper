@@ -1,11 +1,14 @@
 package cn.hjf.csohelper;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static android.os.Environment.getExternalStorageDirectory;
 import static android.os.Environment.getExternalStoragePublicDirectory;
 
 public class PhotoActivity extends AppCompatActivity {
@@ -46,6 +50,14 @@ public class PhotoActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_photo);
+
+		Log.e("O_O",  getFilesDir().getAbsolutePath());
+		Log.e("O_O",  getCacheDir().getAbsolutePath());
+		Log.e("O_O",  Environment.getExternalStorageDirectory().getAbsolutePath());
+		Log.e("O_O",  getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath());
+		Log.e("O_O",  getExternalCacheDir().getAbsolutePath());
+//		Log.e("O_O",  getExternalMediaDirs().getAbsolutePath());
+
 
 //		imageView = findViewById(R.id.iv);
 		recyclerView = findViewById(R.id.rv);
@@ -66,11 +78,13 @@ public class PhotoActivity extends AppCompatActivity {
 	}
 
 	private void viewImage(Uri uri) {
-//		Intent intent = new Intent(Intent.ACTION_VIEW);
-		Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+//		Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 //		intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
-		intent.setType("image/*");
+//		intent.setType("image/*");
 //		intent.setDataAndType(uri, "image/jpeg");
+		intent.setDataAndType(uri, "image/*");
+		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 		if (intent.resolveActivity(getPackageManager()) != null) {
 			startActivity(intent);
 		}
@@ -78,6 +92,13 @@ public class PhotoActivity extends AppCompatActivity {
 //		if (intent.resolveActivity(getPackageManager()) != null) {
 //			startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
 //		}
+
+
+//		File file = null;
+//		final Intent intent = new Intent(Intent.ACTION_VIEW)//
+//				.setDataAndType(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ?
+//								FileProvider.getUriForFile(this,getPackageName() + ".provider", file) : Uri.fromFile(file),
+//						"image/*").addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 	}
 
 	@Override
