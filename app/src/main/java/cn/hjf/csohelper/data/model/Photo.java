@@ -15,9 +15,11 @@ public class Photo implements Serializable {
 	@ColumnInfo(name = "c_uri")
 	public String mUri;
 
+	@NonNull
 	@ColumnInfo(name = "c_cso")
 	public String mCso;
 
+	@NonNull
 	@ColumnInfo(name = "c_check")
 	public String mCheck;
 }
