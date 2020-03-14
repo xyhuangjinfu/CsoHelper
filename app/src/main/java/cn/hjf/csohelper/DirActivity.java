@@ -2,6 +2,8 @@ package cn.hjf.csohelper;
 
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -117,6 +119,23 @@ public class DirActivity extends BaseActivity {
 			Toast.makeText(this, mDirList.get(mDirAdapter.getDirIndex(position)), Toast.LENGTH_SHORT).show();
 		} else {
 			Toast.makeText(this, mPhotoList.get(mDirAdapter.getPhotoIndex(position)), Toast.LENGTH_SHORT).show();
+		}
+		return true;
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu_dir_activity, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+		if (item.getItemId() == R.id.menu_take_photo) {
+			Toast.makeText(this, "take photo", Toast.LENGTH_SHORT).show();
+		} else if (item.getItemId() == R.id.menu_add_dir) {
+			Toast.makeText(this, "add dir", Toast.LENGTH_SHORT).show();
 		}
 		return true;
 	}
