@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.hjf.csohelper.data.model.Check;
-import cn.hjf.csohelper.data.model.Photo;
+import cn.hjf.csohelper.data.model.OldPhoto;
 
 public class ExportUtil {
 
@@ -22,12 +22,12 @@ public class ExportUtil {
 		return rootDir;
 	}
 
-	public static boolean export(Context context, Map<Check, List<Photo>> checkPhotoMap) {
+	public static boolean export(Context context, Map<Check, List<OldPhoto>> checkPhotoMap) {
 		String rootDir = getRootDir(context);
-		for (Map.Entry<Check, List<Photo>> e : checkPhotoMap.entrySet()) {
+		for (Map.Entry<Check, List<OldPhoto>> e : checkPhotoMap.entrySet()) {
 			String dirPath = rootDir + e.getKey().mCso + "/" + e.getKey().mName + "/";
 
-			for (Photo p : e.getValue()) {
+			for (OldPhoto p : e.getValue()) {
 				try {
 					File dirFile = new File(dirPath);
 					if (!dirFile.exists()) {

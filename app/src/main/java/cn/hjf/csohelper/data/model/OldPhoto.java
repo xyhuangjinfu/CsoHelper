@@ -1,0 +1,25 @@
+package cn.hjf.csohelper.data.model;
+
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+import java.io.Serializable;
+
+@Entity(tableName = "t_old_photo")
+public class OldPhoto implements Serializable {
+
+	@PrimaryKey
+	@NonNull
+	@ColumnInfo(name = "c_uri")
+	public String mUri;
+
+	@NonNull
+	@ColumnInfo(name = "c_cso")
+	public String mCso;
+
+	@NonNull
+	@ColumnInfo(name = "c_check")
+	public String mCheck;
+}

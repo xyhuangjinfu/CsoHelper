@@ -12,14 +12,14 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
-import cn.hjf.csohelper.data.model.Photo;
+import cn.hjf.csohelper.data.model.OldPhoto;
 
 public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.MyViewHolder> {
 
-	private List<Photo> mPhotoList;
+	private List<OldPhoto> mPhotoList;
 	private Callback mCallback;
 
-	public PhotoListAdapter(List<Photo> list) {
+	public PhotoListAdapter(List<OldPhoto> list) {
 		mPhotoList = list;
 	}
 

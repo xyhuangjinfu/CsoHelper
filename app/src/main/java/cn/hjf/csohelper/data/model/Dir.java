@@ -7,19 +7,18 @@ import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 
-@Entity(tableName = "t_photo")
-public class Photo implements Serializable {
-
+@Entity(tableName = "t_dir")
+public class Dir implements Serializable {
 	@PrimaryKey
 	@NonNull
-	@ColumnInfo(name = "c_uri")
-	public String mUri;
+	@ColumnInfo(name = "c_uuid")
+	public String mUuid;
 
 	@NonNull
-	@ColumnInfo(name = "c_cso")
-	public String mCso;
+	@ColumnInfo(name = "c_parent_uuid")
+	public String mParentUuid;
 
 	@NonNull
-	@ColumnInfo(name = "c_check")
-	public String mCheck;
+	@ColumnInfo(name = "c_name")
+	public String mName;
 }

@@ -28,7 +28,7 @@ import java.util.Map;
 
 import cn.hjf.csohelper.data.AppDatabaseHolder;
 import cn.hjf.csohelper.data.model.Check;
-import cn.hjf.csohelper.data.model.Photo;
+import cn.hjf.csohelper.data.model.OldPhoto;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
@@ -44,7 +44,7 @@ public class CheckListActivity extends BaseActivity {
 	private RecyclerView.LayoutManager mLayoutManager;
 	private List<Check> mCheckList = new ArrayList<>();
 	private Map<String, Integer> mPhotoCountMap = new HashMap<>();
-	private Map<Check, List<Photo>> mCheckPhotoMap = new HashMap<>();
+	private Map<Check, List<OldPhoto>> mCheckPhotoMap = new HashMap<>();
 
 	private String mCso;
 
@@ -256,9 +256,9 @@ public class CheckListActivity extends BaseActivity {
 						List<Check> checkList = AppDatabaseHolder.getDb(CheckListActivity.this).checkDao().getAll(mCso);
 
 						Map<String, Integer> map = new HashMap<>();
-						Map<Check, List<Photo>> checkPhotoMap = new HashMap<>();
+						Map<Check, List<OldPhoto>> checkPhotoMap = new HashMap<>();
 						for (Check c : checkList) {
-							List<Photo> photos = AppDatabaseHolder.getDb(CheckListActivity.this).photoDao().getAll(mCso, c.mName);
+							List<OldPhoto> photos = AppDatabaseHolder.getDb(CheckListActivity.this).photoDao().getAll(mCso, c.mName);
 							map.put(c.mName, photos.size());
 							checkPhotoMap.put(c, photos);
 						}
@@ -288,7 +288,7 @@ public class CheckListActivity extends BaseActivity {
 						mPhotoCountMap.putAll((Map<String, Integer>) objs[1]);
 
 						mCheckPhotoMap.clear();
-						mCheckPhotoMap.putAll((Map<Check, List<Photo>>) objs[2]);
+						mCheckPhotoMap.putAll((Map<Check, List<OldPhoto>>) objs[2]);
 
 						mAdapter.notifyDataSetChanged();
 					}

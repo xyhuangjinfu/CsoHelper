@@ -33,7 +33,7 @@ import java.util.Date;
 import java.util.List;
 
 import cn.hjf.csohelper.data.AppDatabaseHolder;
-import cn.hjf.csohelper.data.model.Photo;
+import cn.hjf.csohelper.data.model.OldPhoto;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
@@ -49,7 +49,7 @@ public class PhotoListActivity extends BaseActivity {
 	private RecyclerView mRecyclerview;
 	private PhotoListAdapter mAdapter;
 	private GridLayoutManager mLayoutManager;
-	private List<Photo> mPhotoList = new ArrayList<>();
+	private List<OldPhoto> mPhotoList = new ArrayList<>();
 	private Uri mUri = null;
 
 	private String mCso;
@@ -148,7 +148,7 @@ public class PhotoListActivity extends BaseActivity {
 			if (mUri != null) {
 				@Nullable String url = removeToGallery(mUri);
 				if (url != null) {
-					Photo photo = new Photo();
+					OldPhoto photo = new OldPhoto();
 					photo.mCso = mCso;
 					photo.mCheck = mCheck;
 					photo.mUri = url;
@@ -255,7 +255,7 @@ public class PhotoListActivity extends BaseActivity {
 	 * ***************************************************************************************************************
 	 */
 
-	private void deletePhoto(final Photo photo) {
+	private void deletePhoto(final OldPhoto photo) {
 		showLoadDialog();
 		Observable.just("")
 				.flatMap(new Function<Object, ObservableSource<String>>() {
@@ -293,7 +293,7 @@ public class PhotoListActivity extends BaseActivity {
 				});
 	}
 
-	private void savePhoto(final Photo photo) {
+	private void savePhoto(final OldPhoto photo) {
 		showLoadDialog();
 		Observable.just("")
 				.flatMap(new Function<Object, ObservableSource<String>>() {
@@ -333,23 +333,23 @@ public class PhotoListActivity extends BaseActivity {
 	private void fetchPhotoList() {
 		showLoadDialog();
 		Observable.just("")
-				.flatMap(new Function<Object, ObservableSource<List<Photo>>>() {
+				.flatMap(new Function<Object, ObservableSource<List<OldPhoto>>>() {
 					@Override
-					public ObservableSource<List<Photo>> apply(Object o) throws Exception {
-						List<Photo> list = AppDatabaseHolder.getDb(PhotoListActivity.this).photoDao().getAll(mCso, mCheck);
+					public ObservableSource<List<OldPhoto>> apply(Object o) throws Exception {
+						List<OldPhoto> list = AppDatabaseHolder.getDb(PhotoListActivity.this).photoDao().getAll(mCso, mCheck);
 						return Observable.just(list);
 					}
 				})
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(new Observer<List<Photo>>() {
+				.subscribe(new Observer<List<OldPhoto>>() {
 					@Override
 					public void onSubscribe(Disposable d) {
 
 					}
 
 					@Override
-					public void onNext(List<Photo> list) {
+					public void onNext(List<OldPhoto> list) {
 						cancelLoadDialog();
 						mPhotoList.clear();
 						mPhotoList.addAll(list);
