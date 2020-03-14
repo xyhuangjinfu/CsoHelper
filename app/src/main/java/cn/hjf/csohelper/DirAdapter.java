@@ -21,6 +21,8 @@ public class DirAdapter extends RecyclerView.Adapter {
 	private List<String> mDirList;
 	private List<String> mPhotoList;
 
+	private Callback mCallback;
+
 	public DirAdapter(@NonNull List<String> dirList, @NonNull List<String> photoList) {
 		mDirList = dirList;
 		mPhotoList = photoList;
@@ -41,10 +43,19 @@ public class DirAdapter extends RecyclerView.Adapter {
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
 		if (holder instanceof DirVH) {
 			DirVH dirVH = (DirVH) holder;
 			dirVH.mTvDir.setText(mDirList.get(position));
+
+			dirVH.itemView.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (mCallback != null) {
+						mCallback.onDirClick(position);
+					}
+				}
+			});
 			return;
 		}
 
@@ -53,6 +64,18 @@ public class DirAdapter extends RecyclerView.Adapter {
 			Glide.with(photoVH.mTvPhoto)
 					.load(mPhotoList.get(getPhotoIndex(position)))
 					.into(photoVH.mTvPhoto);
+
+
+			photoVH.itemView.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (mCallback != null) {
+						mCallback.onPhotoClick(getPhotoIndex(position));
+					}
+				}
+			});
+
+			return;
 		}
 	}
 
@@ -104,5 +127,21 @@ public class DirAdapter extends RecyclerView.Adapter {
 			super(itemView);
 			mTvPhoto = itemView.findViewById(R.id.iv_photo);
 		}
+	}
+
+	/**
+	 * ***************************************************************************************************************
+	 * <p>
+	 * ***************************************************************************************************************
+	 */
+
+	public interface Callback {
+		void onDirClick(int dirIndex);
+
+		void onPhotoClick(int photoIndex);
+	}
+
+	public void setCallback(Callback callback) {
+		mCallback = callback;
 	}
 }

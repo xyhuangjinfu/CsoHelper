@@ -3,6 +3,7 @@ package cn.hjf.csohelper;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -63,7 +64,7 @@ public class DirActivity extends BaseActivity {
 					if (adapterPosition == 0) {
 						outRect.top = 30 * 2;
 					} else if (adapterPosition == mDirList.size() - 1) {
-						outRect.bottom = 30 * 2;
+						outRect.bottom = 0;
 					}
 				} else {
 					int newPosition = adapterPosition - mDirList.size();
@@ -91,7 +92,19 @@ public class DirActivity extends BaseActivity {
 			}
 		});
 
+
 		mDirAdapter = new DirAdapter(mDirList, mPhotoList);
+		mDirAdapter.setCallback(new DirAdapter.Callback() {
+			@Override
+			public void onDirClick(int dirIndex) {
+				Toast.makeText(DirActivity.this, mDirList.get(dirIndex), Toast.LENGTH_SHORT).show();
+			}
+
+			@Override
+			public void onPhotoClick(int photoIndex) {
+				Toast.makeText(DirActivity.this, mPhotoList.get(photoIndex), Toast.LENGTH_SHORT).show();
+			}
+		});
 		mRecyclerView.setAdapter(mDirAdapter);
 	}
 }
