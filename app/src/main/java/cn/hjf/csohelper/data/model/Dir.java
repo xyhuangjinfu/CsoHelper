@@ -19,5 +19,5 @@ public class Dir implements Serializable {
 	public String mName;
 
 	@ColumnInfo(name = "c_parent_uuid")
-	public String mParentUuid;
+	public String mParentUuid = "";
 }

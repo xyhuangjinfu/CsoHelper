@@ -1,6 +1,7 @@
 package cn.hjf.csohelper;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -16,19 +17,22 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
+import cn.hjf.csohelper.data.model.Dir;
+import cn.hjf.csohelper.data.model.Photo;
+
 public class DirAdapter extends RecyclerView.Adapter {
 
 	public static final int TYPE_DIR = 1;
 	public static final int TYPE_PHOTO = 2;
 
-	private List<String> mDirList;
-	private List<String> mPhotoList;
+	private List<Dir> mDirList;
+	private List<Photo> mPhotoList;
 
 	private Callback mCallback;
 
 	private int mContextMenuPosition;
 
-	public DirAdapter(@NonNull List<String> dirList, @NonNull List<String> photoList) {
+	public DirAdapter(@NonNull List<Dir> dirList, @NonNull List<Photo> photoList) {
 		mDirList = dirList;
 		mPhotoList = photoList;
 	}
@@ -51,7 +55,7 @@ public class DirAdapter extends RecyclerView.Adapter {
 	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
 		if (holder instanceof DirVH) {
 			DirVH dirVH = (DirVH) holder;
-			dirVH.mTvDir.setText(mDirList.get(position));
+			dirVH.mTvDir.setText(mDirList.get(position).mName);
 
 			dirVH.itemView.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -78,7 +82,7 @@ public class DirAdapter extends RecyclerView.Adapter {
 		if (holder instanceof PhotoVH) {
 			PhotoVH photoVH = (PhotoVH) holder;
 			Glide.with(photoVH.mTvPhoto)
-					.load(mPhotoList.get(getPhotoIndex(position)))
+					.load(Uri.parse(mPhotoList.get(getPhotoIndex(position)).mUri))
 					.into(photoVH.mTvPhoto);
 
 			photoVH.itemView.setOnClickListener(new View.OnClickListener() {

@@ -11,7 +11,7 @@ import cn.hjf.csohelper.data.model.OldPhoto;
 
 @Dao
 public interface OldPhotoDao {
-	@Query("SELECT * FROM OldPhoto WHERE c_cso=:cso AND c_check=:check")
+	@Query("SELECT * FROM t_old_photo WHERE c_cso=:cso AND c_check=:check")
 	List<OldPhoto> getAll(String cso, String check);
 
 	@Insert

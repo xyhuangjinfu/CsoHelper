@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_export"
+        android:title="导出"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_add_dir"
+        android:title="添加分类"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_take_photo"
+        android:title="拍照"
+        app:showAsAction="always" />
+</menu>
