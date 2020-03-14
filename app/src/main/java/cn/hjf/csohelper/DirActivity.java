@@ -626,9 +626,6 @@ public class DirActivity extends BaseActivity {
 			sb.append("_");
 		}
 
-		sb.append(mCurrentDir.mName);
-		sb.append("_");
-
 		sb.append(mPhotoList.size() + 1);
 
 		return sb.toString();
