@@ -11,12 +11,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import cn.hjf.csohelper.data.AppDatabaseHolder;
-import cn.hjf.csohelper.data.model.Check;
 import cn.hjf.csohelper.data.model.Dir;
-import cn.hjf.csohelper.data.model.OldPhoto;
 import cn.hjf.csohelper.data.model.Photo;
 
 public class ExportUtil {
@@ -75,37 +72,6 @@ public class ExportUtil {
 		}
 
 		return false;
-	}
-
-	public static boolean export(Context context, Map<Check, List<OldPhoto>> checkPhotoMap) {
-		String rootDir = getRootDir(context);
-		for (Map.Entry<Check, List<OldPhoto>> e : checkPhotoMap.entrySet()) {
-			String dirPath = rootDir + e.getKey().mCso + "/" + e.getKey().mName + "/";
-
-			for (OldPhoto p : e.getValue()) {
-				try {
-					File dirFile = new File(dirPath);
-					if (!dirFile.exists()) {
-						if (!dirFile.mkdirs()) {
-							return false;
-						}
-					}
-
-					Uri uri = Uri.parse(p.mUri);
-					Bitmap bitmap = BitmapFactory.decodeStream(context.getContentResolver().openInputStream(uri));
-
-					File file = new File(dirFile, getFileName(context, uri));
-					FileOutputStream out = new FileOutputStream(file);
-					bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-					out.flush();
-					out.close();
-				} catch (Exception ex) {
-					ex.printStackTrace();
-					return false;
-				}
-			}
-		}
-		return true;
 	}
 
 	private static String getFileName(Context context, Uri uri) {
