@@ -94,9 +94,9 @@ public class DirActivity extends BaseActivity {
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
 		int position = mDirAdapter.getContextMenuPosition();
 		if (mDirAdapter.getItemViewType(position) == DirAdapter.TYPE_DIR) {
-			deleteDir(mDirList.get(mDirAdapter.getDirIndex(position)));
+			showDeleteDirDialog(mDirList.get(mDirAdapter.getDirIndex(position)));
 		} else {
-			deletePhoto(mPhotoList.get(mDirAdapter.getPhotoIndex(position)));
+			showDeletePhotoDialog(mPhotoList.get(mDirAdapter.getPhotoIndex(position)));
 		}
 		return true;
 	}
@@ -253,6 +253,7 @@ public class DirActivity extends BaseActivity {
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this)
 				.setTitle("输入分类名称")
+				.setCancelable(false)
 				.setView(view)
 				.setPositiveButton("添加", new DialogInterface.OnClickListener() {
 					@Override
@@ -266,6 +267,36 @@ public class DirActivity extends BaseActivity {
 						}
 
 						saveDir(dir);
+					}
+				})
+				.setNegativeButton("取消", null);
+		builder.create().show();
+	}
+
+	private void showDeleteDirDialog(final Dir dir) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this)
+				.setTitle("删除分类")
+				.setMessage("当前分类下的子分类和照片都会被删除，确定删除？")
+				.setCancelable(false)
+				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						deleteDir(dir);
+					}
+				})
+				.setNegativeButton("取消", null);
+		builder.create().show();
+	}
+
+	private void showDeletePhotoDialog(final Photo photo) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this)
+				.setTitle("删除照片")
+				.setMessage("确定删除这张照片？")
+				.setCancelable(false)
+				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						deletePhoto(photo);
 					}
 				})
 				.setNegativeButton("取消", null);
@@ -391,7 +422,7 @@ public class DirActivity extends BaseActivity {
 	}
 
 	private void deleteDir(final Dir dir) {
-		showLoadDialog();
+		showLoadDialog("删除中...");
 		Observable.just("")
 				.flatMap(new Function<Object, ObservableSource<String>>() {
 					@Override
@@ -465,7 +496,7 @@ public class DirActivity extends BaseActivity {
 	}
 
 	private void deletePhoto(final Photo photo) {
-		showLoadDialog();
+		showLoadDialog("删除中...");
 		Observable.just("")
 				.flatMap(new Function<Object, ObservableSource<String>>() {
 					@Override
