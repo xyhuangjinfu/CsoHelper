@@ -388,7 +388,7 @@ public class DirActivity extends BaseActivity {
 				.flatMap(new Function<Object, ObservableSource<String>>() {
 					@Override
 					public ObservableSource<String> apply(Object o) throws Exception {
-						AppDatabaseHolder.getDb(DirActivity.this).dirDao().delete(dir);
+						DeleteUtil.deleteDir(DirActivity.this, dir);
 						return Observable.just("");
 					}
 				})
@@ -462,7 +462,7 @@ public class DirActivity extends BaseActivity {
 				.flatMap(new Function<Object, ObservableSource<String>>() {
 					@Override
 					public ObservableSource<String> apply(Object o) throws Exception {
-						AppDatabaseHolder.getDb(DirActivity.this).photoDao().delete(photo);
+						DeleteUtil.deletePhoto(DirActivity.this, photo);
 						return Observable.just("");
 					}
 				})
@@ -499,8 +499,7 @@ public class DirActivity extends BaseActivity {
 				.flatMap(new Function<Object, ObservableSource<Boolean>>() {
 					@Override
 					public ObservableSource<Boolean> apply(Object o) throws Exception {
-//						boolean b = ExportUtil.export(CheckListActivity.this, mCheckPhotoMap);
-//						return Observable.just(b);
+						boolean b = ExportUtil.exportDir(DirActivity.this, mFullDirList);
 						return Observable.just(true);
 					}
 				})
