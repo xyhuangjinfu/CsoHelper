@@ -1,6 +1,9 @@
 package cn.hjf.csohelper;
 
+import android.app.Activity;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,13 +18,15 @@ import java.util.List;
 
 public class DirAdapter extends RecyclerView.Adapter {
 
-	private static final int TYPE_DIR = 1;
-	private static final int TYPE_PHOTO = 2;
+	public static final int TYPE_DIR = 1;
+	public static final int TYPE_PHOTO = 2;
 
 	private List<String> mDirList;
 	private List<String> mPhotoList;
 
 	private Callback mCallback;
+
+	private int mContextMenuPosition;
 
 	public DirAdapter(@NonNull List<String> dirList, @NonNull List<String> photoList) {
 		mDirList = dirList;
@@ -56,6 +61,17 @@ public class DirAdapter extends RecyclerView.Adapter {
 					}
 				}
 			});
+
+			final Activity activity = (Activity) holder.itemView.getContext();
+			activity.registerForContextMenu(holder.itemView);
+			holder.itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+				@Override
+				public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+					mContextMenuPosition = position;
+					MenuInflater inflater = activity.getMenuInflater();
+					inflater.inflate(R.menu.menu_list_context, menu);
+				}
+			});
 			return;
 		}
 
@@ -65,13 +81,23 @@ public class DirAdapter extends RecyclerView.Adapter {
 					.load(mPhotoList.get(getPhotoIndex(position)))
 					.into(photoVH.mTvPhoto);
 
-
 			photoVH.itemView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					if (mCallback != null) {
 						mCallback.onPhotoClick(getPhotoIndex(position));
 					}
+				}
+			});
+
+			final Activity activity = (Activity) holder.itemView.getContext();
+			activity.registerForContextMenu(holder.itemView);
+			holder.itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+				@Override
+				public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+					mContextMenuPosition = position;
+					MenuInflater inflater = activity.getMenuInflater();
+					inflater.inflate(R.menu.menu_list_context, menu);
 				}
 			});
 
@@ -98,10 +124,6 @@ public class DirAdapter extends RecyclerView.Adapter {
 	 * <p>
 	 * ***************************************************************************************************************
 	 */
-
-	private int getPhotoIndex(int position) {
-		return position - mDirList.size();
-	}
 
 	/**
 	 * ***************************************************************************************************************
@@ -143,5 +165,17 @@ public class DirAdapter extends RecyclerView.Adapter {
 
 	public void setCallback(Callback callback) {
 		mCallback = callback;
+	}
+
+	public int getContextMenuPosition() {
+		return mContextMenuPosition;
+	}
+
+	public int getDirIndex(int position) {
+		return position;
+	}
+
+	public int getPhotoIndex(int position) {
+		return position - mDirList.size();
 	}
 }

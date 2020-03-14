@@ -2,6 +2,7 @@ package cn.hjf.csohelper;
 
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -106,5 +107,17 @@ public class DirActivity extends BaseActivity {
 			}
 		});
 		mRecyclerView.setAdapter(mDirAdapter);
+	}
+
+	@Override
+	public boolean onContextItemSelected(@NonNull MenuItem item) {
+//		deleteCso(mCsoList.get(mAdapter.getContextMenuPosition()));
+		int position = mDirAdapter.getContextMenuPosition();
+		if (mDirAdapter.getItemViewType(position) == DirAdapter.TYPE_DIR) {
+			Toast.makeText(this, mDirList.get(mDirAdapter.getDirIndex(position)), Toast.LENGTH_SHORT).show();
+		} else {
+			Toast.makeText(this, mPhotoList.get(mDirAdapter.getPhotoIndex(position)), Toast.LENGTH_SHORT).show();
+		}
+		return true;
 	}
 }
