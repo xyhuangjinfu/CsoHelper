@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
+import java.util.Map;
 
 import cn.hjf.csohelper.data.model.Dir;
 import cn.hjf.csohelper.data.model.Photo;
@@ -27,14 +28,16 @@ public class DirAdapter extends RecyclerView.Adapter {
 
 	private List<Dir> mDirList;
 	private List<Photo> mPhotoList;
+	private Map<Dir, Integer[]> mDirInfoMap;
 
 	private Callback mCallback;
 
 	private int mContextMenuPosition;
 
-	public DirAdapter(@NonNull List<Dir> dirList, @NonNull List<Photo> photoList) {
+	public DirAdapter(@NonNull List<Dir> dirList, @NonNull List<Photo> photoList, @NonNull Map<Dir, Integer[]> dirInfoMap) {
 		mDirList = dirList;
 		mPhotoList = photoList;
+		mDirInfoMap = dirInfoMap;
 	}
 
 	@NonNull
@@ -56,6 +59,10 @@ public class DirAdapter extends RecyclerView.Adapter {
 		if (holder instanceof DirVH) {
 			DirVH dirVH = (DirVH) holder;
 			dirVH.mTvDir.setText(mDirList.get(position).mName);
+
+			Integer[] count = mDirInfoMap.get(mDirList.get(position));
+			dirVH.mTvDirCount.setText("分类数:" + count[0]);
+			dirVH.mTvPhotoCount.setText("照片数:" + count[1]);
 
 			dirVH.itemView.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -138,10 +145,14 @@ public class DirAdapter extends RecyclerView.Adapter {
 	public static class DirVH extends RecyclerView.ViewHolder {
 
 		private TextView mTvDir;
+		private TextView mTvDirCount;
+		private TextView mTvPhotoCount;
 
 		public DirVH(@NonNull View itemView) {
 			super(itemView);
 			mTvDir = itemView.findViewById(R.id.tv_item);
+			mTvDirCount = itemView.findViewById(R.id.tv_dir_count);
+			mTvPhotoCount = itemView.findViewById(R.id.tv_photo_count);
 		}
 	}
 

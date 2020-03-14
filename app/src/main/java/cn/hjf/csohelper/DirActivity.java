@@ -36,7 +36,9 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import cn.hjf.csohelper.data.AppDatabaseHolder;
@@ -58,8 +60,10 @@ public class DirActivity extends BaseActivity {
 	private RecyclerView mRecyclerView;
 	private GridLayoutManager mGridLayoutManager;
 	private DirAdapter mDirAdapter;
+
 	private List<Dir> mDirList = new ArrayList<>();
 	private List<Photo> mPhotoList = new ArrayList<>();
+	private Map<Dir, Integer[]> mDirInfoMap = new HashMap<>();
 
 	private ArrayList<Dir> mFullDirList = new ArrayList<>();
 	private Dir mCurrentDir;
@@ -71,22 +75,18 @@ public class DirActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dir);
 
-//		mDirList.add("dir 1");
-//		mDirList.add("dir 2");
-//		mDirList.add("dir 3");
-//		mDirList.add("dir 4");
-//
-//		mPhotoList.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1584182611064&di=4dfd022b632fe5c0fb8fe443bfd73025&imgtype=0&src=http%3A%2F%2Ft7.baidu.com%2Fit%2Fu%3D378254553%2C3884800361%26fm%3D79%26app%3D86%26f%3DJPEG%3Fw%3D1280%26h%3D2030");
-//		mPhotoList.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1584182644745&di=2c7c63824b7a8224530b8b0902196ea7&imgtype=0&src=http%3A%2F%2Ft7.baidu.com%2Fit%2Fu%3D3616242789%2C1098670747%26fm%3D79%26app%3D86%26f%3DJPEG%3Fw%3D900%26h%3D1350");
-//		mPhotoList.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1584182677980&di=2c0cb7f85fbb2ecf5426255f62971ba8&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F50%2F05%2F01300000763638130719050981141.jpg");
-//		mPhotoList.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1584182879626&di=6ef7368203b3742f9f9e14f46d83552b&imgtype=0&src=http%3A%2F%2Fa2.att.hudong.com%2F50%2F03%2F01300000167059121860035875425.jpg");
-
 		initLaunchParams();
 
 		initTitle();
 
 		initRecyclerView();
 
+		fetchDirData();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
 		fetchDirData();
 	}
 
@@ -229,7 +229,7 @@ public class DirActivity extends BaseActivity {
 			}
 		});
 
-		mDirAdapter = new DirAdapter(mDirList, mPhotoList);
+		mDirAdapter = new DirAdapter(mDirList, mPhotoList, mDirInfoMap);
 		mDirAdapter.setCallback(new DirAdapter.Callback() {
 			@Override
 			public void onDirClick(int dirIndex) {
@@ -346,9 +346,19 @@ public class DirActivity extends BaseActivity {
 						List<Dir> dirList = AppDatabaseHolder.getDb(DirActivity.this).dirDao().getDirList(mCurrentDir == null ? "" : mCurrentDir.mUuid);
 						List<Photo> photoList = AppDatabaseHolder.getDb(DirActivity.this).photoDao().getPhotoList(mCurrentDir == null ? "" : mCurrentDir.mUuid);
 
-						Object[] objs = new Object[2];
+						Map<Dir, Integer[]> map = new HashMap<>();
+						for (Dir sd : dirList) {
+							List<Dir> sdl = AppDatabaseHolder.getDb(DirActivity.this).dirDao().getDirList(sd.mUuid);
+							List<Photo> pl = AppDatabaseHolder.getDb(DirActivity.this).photoDao().getPhotoList(sd.mUuid);
+
+							map.put(sd, new Integer[]{sdl.size(), pl.size()});
+						}
+
+						Object[] objs = new Object[3];
 						objs[0] = dirList;
 						objs[1] = photoList;
+						objs[2] = map;
+
 						return Observable.just(objs);
 					}
 				})
@@ -368,6 +378,8 @@ public class DirActivity extends BaseActivity {
 						mDirList.addAll((List<Dir>) objs[0]);
 						mPhotoList.clear();
 						mPhotoList.addAll((List<Photo>) objs[1]);
+						mDirInfoMap.clear();
+						mDirInfoMap.putAll((Map<Dir, Integer[]>) objs[2]);
 						mDirAdapter.notifyDataSetChanged();
 					}
 
