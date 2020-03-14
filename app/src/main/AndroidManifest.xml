@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".CsoListActivity"
+            android:name=".DirActivity"
             android:label="CSO列表">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
