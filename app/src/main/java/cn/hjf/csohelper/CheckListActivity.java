@@ -258,7 +258,7 @@ public class CheckListActivity extends BaseActivity {
 						Map<String, Integer> map = new HashMap<>();
 						Map<Check, List<OldPhoto>> checkPhotoMap = new HashMap<>();
 						for (Check c : checkList) {
-							List<OldPhoto> photos = AppDatabaseHolder.getDb(CheckListActivity.this).photoDao().getAll(mCso, c.mName);
+							List<OldPhoto> photos = AppDatabaseHolder.getDb(CheckListActivity.this).oldPhotoDao().getAll(mCso, c.mName);
 							map.put(c.mName, photos.size());
 							checkPhotoMap.put(c, photos);
 						}

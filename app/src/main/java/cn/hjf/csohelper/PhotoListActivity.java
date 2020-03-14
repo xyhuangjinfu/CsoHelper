@@ -261,7 +261,7 @@ public class PhotoListActivity extends BaseActivity {
 				.flatMap(new Function<Object, ObservableSource<String>>() {
 					@Override
 					public ObservableSource<String> apply(Object o) throws Exception {
-						AppDatabaseHolder.getDb(PhotoListActivity.this).photoDao().delete(photo);
+						AppDatabaseHolder.getDb(PhotoListActivity.this).oldPhotoDao().delete(photo);
 						getContentResolver().delete(Uri.parse(photo.mUri), null, null);
 						return Observable.just("");
 					}
@@ -299,7 +299,7 @@ public class PhotoListActivity extends BaseActivity {
 				.flatMap(new Function<Object, ObservableSource<String>>() {
 					@Override
 					public ObservableSource<String> apply(Object o) throws Exception {
-						AppDatabaseHolder.getDb(PhotoListActivity.this).photoDao().insert(photo);
+						AppDatabaseHolder.getDb(PhotoListActivity.this).oldPhotoDao().insert(photo);
 						return Observable.just("");
 					}
 				})
@@ -336,7 +336,7 @@ public class PhotoListActivity extends BaseActivity {
 				.flatMap(new Function<Object, ObservableSource<List<OldPhoto>>>() {
 					@Override
 					public ObservableSource<List<OldPhoto>> apply(Object o) throws Exception {
-						List<OldPhoto> list = AppDatabaseHolder.getDb(PhotoListActivity.this).photoDao().getAll(mCso, mCheck);
+						List<OldPhoto> list = AppDatabaseHolder.getDb(PhotoListActivity.this).oldPhotoDao().getAll(mCso, mCheck);
 						return Observable.just(list);
 					}
 				})
