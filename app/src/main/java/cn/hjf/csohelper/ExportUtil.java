@@ -16,10 +16,16 @@ import cn.hjf.csohelper.data.model.Check;
 import cn.hjf.csohelper.data.model.Photo;
 
 public class ExportUtil {
+
+	public static String getRootDir(Context context) {
+		String rootDir = context.getExternalFilesDir(null).getAbsolutePath() + "/图片导出/";
+		return rootDir;
+	}
+
 	public static boolean export(Context context, Map<Check, List<Photo>> checkPhotoMap) {
-		String dir = context.getExternalFilesDir(null).getAbsolutePath() + "/图片导出/";
+		String rootDir = getRootDir(context);
 		for (Map.Entry<Check, List<Photo>> e : checkPhotoMap.entrySet()) {
-			String dirPath = dir + e.getKey().mCso + "/" + e.getKey().mName + "/";
+			String dirPath = rootDir + e.getKey().mCso + "/" + e.getKey().mName + "/";
 
 			for (Photo p : e.getValue()) {
 				try {

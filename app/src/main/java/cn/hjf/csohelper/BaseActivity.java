@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
+	private static final String DEFAULT_LOAD_MSG = "加载中...";
 	private AlertDialog mLoadDialog;
 
 	@Override
@@ -18,11 +19,17 @@ public abstract class BaseActivity extends AppCompatActivity {
 	}
 
 	private AlertDialog createAlertDialog() {
-		return new AlertDialog.Builder(this).setMessage("加载中")
+		return new AlertDialog.Builder(this).setMessage(DEFAULT_LOAD_MSG)
 				.setCancelable(false).create();
 	}
 
+	protected void showLoadDialog(String msg) {
+		mLoadDialog.setMessage(msg);
+		mLoadDialog.show();
+	}
+
 	protected void showLoadDialog() {
+		mLoadDialog.setMessage(DEFAULT_LOAD_MSG);
 		mLoadDialog.show();
 	}
 

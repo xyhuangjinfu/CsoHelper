@@ -3,8 +3,12 @@ package cn.hjf.csohelper;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,7 +17,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -44,6 +47,8 @@ public class CheckListActivity extends BaseActivity {
 
 	private String mCso;
 
+	private AlertDialog mExportConfirmDialog;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -63,6 +68,18 @@ public class CheckListActivity extends BaseActivity {
 			}
 		});
 		mRecyclerView.setAdapter(mAdapter);
+
+		mExportConfirmDialog = new AlertDialog.Builder(this).setTitle("导出图片")
+				.setMessage(getExportMsg())
+				.setCancelable(false)
+				.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						export();
+					}
+				})
+				.setNegativeButton("取消", null)
+				.create();
 
 		fetchCheckList();
 	}
@@ -92,22 +109,22 @@ public class CheckListActivity extends BaseActivity {
 		if (item.getItemId() == R.id.menu_add_item) {
 			showCreateDialog();
 		} else if (item.getItemId() == R.id.menu_export) {
-
-			if (checkyStoragePermissions()) {
-				export();
-			}
+			mExportConfirmDialog.show();
 		}
 		return true;
 	}
 
-	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		if (requestCode == 111) {
-			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				export();
-			}
-		}
+	private CharSequence getExportMsg() {
+		String s = "你的图片将会被导出到\n" + ExportUtil.getRootDir(this) + "\n目录下，确认导出？";
+		SpannableString spannableString = new SpannableString(s);
+
+		int start = s.indexOf("/");
+		int end = s.lastIndexOf("/") + 1;
+
+		spannableString.setSpan(new ForegroundColorSpan(Color.RED), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+		spannableString.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+
+		return spannableString;
 	}
 
 	/**
@@ -146,22 +163,6 @@ public class CheckListActivity extends BaseActivity {
 				})
 				.setNegativeButton("取消", null);
 		builder.create().show();
-	}
-
-	private boolean checkyStoragePermissions() {
-		try {
-			int permission = ActivityCompat.checkSelfPermission(this,
-					"android.permission.WRITE_EXTERNAL_STORAGE");
-			if (permission != PackageManager.PERMISSION_GRANTED) {
-				String[] PERMISSIONS_STORAGE = {"android.permission.WRITE_EXTERNAL_STORAGE"};
-				ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, 111);
-				return false;
-			}
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
 	}
 
 	/**
@@ -304,7 +305,7 @@ public class CheckListActivity extends BaseActivity {
 	}
 
 	private void export() {
-		showLoadDialog();
+		showLoadDialog("导出中...");
 		Observable.just("")
 				.flatMap(new Function<Object, ObservableSource<Boolean>>() {
 					@Override
