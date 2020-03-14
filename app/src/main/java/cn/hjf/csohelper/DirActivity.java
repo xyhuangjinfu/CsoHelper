@@ -83,6 +83,8 @@ public class DirActivity extends BaseActivity {
 
 		initLaunchParams();
 
+		initTitle();
+
 		initRecyclerView();
 
 		fetchDirData();
@@ -159,6 +161,12 @@ public class DirActivity extends BaseActivity {
 			mFullDirList = parentDirList;
 
 			mCurrentDir = mFullDirList.get(mFullDirList.size() - 1);
+		}
+	}
+
+	private void initTitle() {
+		if (mCurrentDir != null) {
+			setTitle(mCurrentDir.mName);
 		}
 	}
 
