@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,6 +13,7 @@ import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -46,7 +48,7 @@ public class PhotoListActivity extends BaseActivity {
 
 	private RecyclerView mRecyclerview;
 	private PhotoListAdapter mAdapter;
-	private RecyclerView.LayoutManager mLayoutManager;
+	private GridLayoutManager mLayoutManager;
 	private List<Photo> mPhotoList = new ArrayList<>();
 	private Uri mUri = null;
 
@@ -62,8 +64,42 @@ public class PhotoListActivity extends BaseActivity {
 		mCheck = getIntent().getStringExtra("KEY_CHECK");
 		setTitle(mCheck);
 
+		initRecyclerview();
+
+		fetchPhotoList();
+	}
+
+	private void initRecyclerview() {
+		final int columnCount = 2;
+		final int span = 20;
 		mRecyclerview = findViewById(R.id.rv);
-		mLayoutManager = new GridLayoutManager(this, 3);
+		mLayoutManager = new GridLayoutManager(this, columnCount);
+		mRecyclerview.addItemDecoration(new RecyclerView.ItemDecoration() {
+			@Override
+			public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+				int column = parent.getChildAdapterPosition(view) % columnCount;
+				int row = parent.getChildAdapterPosition(view) / columnCount;
+				int allRowCount = (int) Math.ceil(parent.getAdapter().getItemCount() * 1.0 / columnCount);
+
+				outRect.top = span;
+				outRect.bottom = span;
+				outRect.left = span;
+				outRect.right = span;
+
+				if (column == 0) {
+					outRect.left = span * 2;
+				} else if (column == columnCount - 1) {
+					outRect.right = span * 2;
+				}
+
+				if (row == 0) {
+					outRect.top = span * 2;
+				} else if (row == allRowCount - 1) {
+					outRect.bottom = span * 2;
+				}
+			}
+		});
+
 		mRecyclerview.setLayoutManager(mLayoutManager);
 		mAdapter = new PhotoListAdapter(mPhotoList);
 		mAdapter.setCallback(new PhotoListAdapter.Callback() {
@@ -78,8 +114,6 @@ public class PhotoListActivity extends BaseActivity {
 			}
 		});
 		mRecyclerview.setAdapter(mAdapter);
-
-		fetchPhotoList();
 	}
 
 	private void showConfirmDeleteDialog(final int position) {
