@@ -1,7 +1,10 @@
 package cn.hjf.csohelper;
 
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,7 +19,6 @@ public class DirActivity extends BaseActivity {
 	private DirAdapter mDirAdapter;
 	private List<String> mDirList = new ArrayList<>();
 	private List<String> mPhotoList = new ArrayList<>();
-
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,8 +49,49 @@ public class DirActivity extends BaseActivity {
 		});
 		mRecyclerView.setLayoutManager(mGridLayoutManager);
 
+		mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+			@Override
+			public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+				int adapterPosition = parent.getChildAdapterPosition(view);
+
+				if (adapterPosition < mDirList.size()) {
+					outRect.left = 60;
+					outRect.top = 30;
+					outRect.right = 60;
+					outRect.bottom = 30;
+
+					if (adapterPosition == 0) {
+						outRect.top = 30 * 2;
+					} else if (adapterPosition == mDirList.size() - 1) {
+						outRect.bottom = 30 * 2;
+					}
+				} else {
+					int newPosition = adapterPosition - mDirList.size();
+					int column = newPosition % 2;
+					int row = newPosition / 2;
+					int allRowCount = (int) Math.ceil((parent.getAdapter().getItemCount() - mDirList.size()) * 1.0 / 2);
+
+					outRect.top = 30;
+					outRect.bottom = 30;
+					outRect.left = 30;
+					outRect.right = 30;
+
+					if (column == 0) {
+						outRect.left = 30 * 2;
+					} else if (column == 2 - 1) {
+						outRect.right = 30 * 2;
+					}
+
+					if (row == 0) {
+						outRect.top = 30 * 2;
+					} else if (row == allRowCount - 1) {
+						outRect.bottom = 30 * 2;
+					}
+				}
+			}
+		});
+
 		mDirAdapter = new DirAdapter(mDirList, mPhotoList);
 		mRecyclerView.setAdapter(mDirAdapter);
-
 	}
 }

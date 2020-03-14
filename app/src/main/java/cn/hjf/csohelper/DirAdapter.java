@@ -30,7 +30,7 @@ public class DirAdapter extends RecyclerView.Adapter {
 	@Override
 	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		if (viewType == TYPE_DIR) {
-			View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_cso_check_item, null);
+			View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_dir_item, null);
 			return new DirVH(view);
 		}
 		if (viewType == TYPE_PHOTO) {
