@@ -117,7 +117,7 @@ public class DirActivity extends BaseActivity {
 	@Override
 	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 		if (item.getItemId() == R.id.menu_take_photo) {
-			takePhoto();
+			mTakePhotoUri = takePhoto();
 		} else if (item.getItemId() == R.id.menu_add_dir) {
 			showCreateDirDialog();
 		} else if (item.getItemId() == R.id.menu_export) {
