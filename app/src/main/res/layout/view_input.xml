@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<EditText xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/et"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:hint="在此输入内容">
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp">
 
-</EditText>
+    <EditText
+        android:id="@+id/et"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="在此输入内容" />
+</FrameLayout>

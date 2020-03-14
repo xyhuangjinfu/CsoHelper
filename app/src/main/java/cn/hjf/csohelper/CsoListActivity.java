@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -95,11 +96,12 @@ public class CsoListActivity extends BaseActivity {
 	 */
 
 	private void showCreateDialog() {
-		final EditText editText = (EditText) getLayoutInflater().inflate(R.layout.view_input, null);
+		final View view = getLayoutInflater().inflate(R.layout.view_input, null);
+		final EditText editText = view.findViewById(R.id.et);
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this)
 				.setTitle("输入CSO名称")
-				.setView(editText)
+				.setView(view)
 				.setPositiveButton("添加", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int id) {
