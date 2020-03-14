@@ -1,9 +1,11 @@
 package cn.hjf.csohelper;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.provider.MediaStore;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -15,7 +17,7 @@ import cn.hjf.csohelper.data.model.Photo;
 
 public class ExportUtil {
 	public static boolean export(Context context, Map<Check, List<Photo>> checkPhotoMap) {
-		String dir = context.getExternalFilesDir(null).getAbsolutePath() + "/cso助手/";
+		String dir = context.getExternalFilesDir(null).getAbsolutePath() + "/图片导出/";
 		for (Map.Entry<Check, List<Photo>> e : checkPhotoMap.entrySet()) {
 			String dirPath = dir + e.getKey().mCso + "/" + e.getKey().mName + "/";
 
@@ -28,9 +30,10 @@ public class ExportUtil {
 						}
 					}
 
-					Bitmap bitmap = BitmapFactory.decodeStream(context.getContentResolver().openInputStream(Uri.parse(p.mUri)));
+					Uri uri = Uri.parse(p.mUri);
+					Bitmap bitmap = BitmapFactory.decodeStream(context.getContentResolver().openInputStream(uri));
 
-					File file = new File(dirFile, getFileName(p.mUri));
+					File file = new File(dirFile, getFileName(context, uri));
 					FileOutputStream out = new FileOutputStream(file);
 					bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
 					out.flush();
@@ -44,7 +47,13 @@ public class ExportUtil {
 		return true;
 	}
 
-	private static String getFileName(String uri) {
-		return uri.substring(uri.lastIndexOf("/") + 1);
+	private static String getFileName(Context context, Uri uri) {
+		Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+		while (cursor.moveToNext()) {
+			String displayName = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
+			cursor.close();
+			return displayName;
+		}
+		return "未知命名";
 	}
 }
